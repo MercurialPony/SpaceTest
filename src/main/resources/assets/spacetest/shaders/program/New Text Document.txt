@@ -1,0 +1,26 @@
+#version 150
+
+in vec2 texCoord;
+in vec2 oneTexel;
+
+uniform sampler2D DiffuseSampler;
+
+uniform vec2 InSize;
+uniform float RadiusSq;
+
+out vec4 fragColor;
+
+void main()
+{
+	vec2 uv = texCoord;
+	uv.y = -uv.y;
+	vec2 pos = vec2(0.5, 0.5);
+	vec2 warp = normalize(pos - texCoord.xy) * pow(distance(pos, texCoord.xy), -2.0) * 30.0;
+	warp.y = -warp.y;
+	uv = uv + warp;
+	
+	float light = clamp(0.1 * distance(pos, texCoord.xy) - 1.5, 0.0, 1.0);
+	
+	vec4 color = texture(DiffuseSampler, uv);
+	fragColor = color * light;
+}
