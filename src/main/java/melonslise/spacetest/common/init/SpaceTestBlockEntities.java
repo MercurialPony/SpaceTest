@@ -3,7 +3,8 @@ package melonslise.spacetest.common.init;
 import java.util.function.Supplier;
 
 import melonslise.spacetest.SpaceTest;
-import melonslise.spacetest.common.blockentity.TestBlockEntity;
+import melonslise.spacetest.common.blockentity.BlackHoleBlockEntity;
+import melonslise.spacetest.common.blockentity.PlanetBlockEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -18,7 +19,8 @@ public class SpaceTestBlockEntities
 
 	private SpaceTestBlockEntities() {}
 
-	public static final RegistryObject<BlockEntityType<TestBlockEntity>> TEST = add("test", () -> type(TestBlockEntity::new, SpaceTestBlocks.TEST.get()));
+	public static final RegistryObject<BlockEntityType<BlackHoleBlockEntity>> BLACK_HOLE = add("black_hole", () -> type(BlackHoleBlockEntity::new, SpaceTestBlocks.BLACK_HOLE.get()));
+	public static final RegistryObject<BlockEntityType<PlanetBlockEntity>> PLANET = add("planet", () -> type(PlanetBlockEntity::new, SpaceTestBlocks.PLANET.get()));
 
 	public static <T extends BlockEntity> BlockEntityType<T> type(BlockEntitySupplier<T> supplier, Block... blocks)
 	{

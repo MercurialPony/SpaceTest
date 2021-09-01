@@ -5,12 +5,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 
 import melonslise.spacetest.client.init.SpaceTestRenderTypes;
 import melonslise.spacetest.client.init.SpaceTestShaders;
+import melonslise.spacetest.client.renderer.shader.ExtendedShaderInstance;
 import melonslise.spacetest.client.renderer.shader.ExtendedTextureTarget;
-import melonslise.spacetest.common.blockentity.TestBlockEntity;
+import melonslise.spacetest.common.blockentity.BlackHoleBlockEntity;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -24,17 +24,17 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class TestBER implements BlockEntityRenderer<TestBlockEntity>
+public class BlackHoleBER implements BlockEntityRenderer<BlackHoleBlockEntity>
 {
 	public static ExtendedTextureTarget auxSampler;
 
-	public TestBER(BlockEntityRendererProvider.Context ctx)
+	public BlackHoleBER(BlockEntityRendererProvider.Context ctx)
 	{
 		
 	}
 
 	@Override
-	public void render(TestBlockEntity be, float frameTime, PoseStack mtx, MultiBufferSource buf, int light, int overlay)
+	public void render(BlackHoleBlockEntity be, float frameTime, PoseStack mtx, MultiBufferSource buf, int light, int overlay)
 	{
 		Camera cam = Minecraft.getInstance().gameRenderer.getMainCamera();
 		Vec3 camPos = cam.getPosition();
@@ -43,8 +43,7 @@ public class TestBER implements BlockEntityRenderer<TestBlockEntity>
 
 		// Init shader uniforms
 		BlockPos pos = be.getBlockPos();
-		Matrix4f modelView = mtx.last().pose().copy();
-		Matrix4f invModelView = modelView.copy();
+		Matrix4f invModelView = mtx.last().pose().copy();
 		invModelView.invert();
 		Vector3f center = new Vector3f(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f);
 		// center.add((float) -camPos.x, (float) - camPos.y, (float) -camPos.z);
@@ -54,7 +53,7 @@ public class TestBER implements BlockEntityRenderer<TestBlockEntity>
 		// Copy main framebuffer into aux framebuffer
 		RenderTarget mainSampler = Minecraft.getInstance().getMainRenderTarget();
 		if(auxSampler == null)
-			auxSampler = new ExtendedTextureTarget(mainSampler);
+			auxSampler = new ExtendedTextureTarget(mainSampler, false);
 		else if(auxSampler.width != mainSampler.width || auxSampler.height != mainSampler.height)
 			auxSampler.resize(mainSampler.width, mainSampler.height, false);
 		auxSampler.setClearColor(0f, 0f, 0f, 0f);
@@ -62,20 +61,29 @@ public class TestBER implements BlockEntityRenderer<TestBlockEntity>
 		mainSampler.bindWrite(false);
 
 		// Pass sampler and uniforms to shader
-		SpaceTestShaders.blackHoleShader.setSampler("DiffuseSampler", auxSampler);
-		SpaceTestShaders.blackHoleShader.setUniform("ModelViewInverseMat", invModelView);
-		SpaceTestShaders.blackHoleShader.setUniform("Center", center);
-		SpaceTestShaders.blackHoleShader.setUniform("Radius", 60f);
-		SpaceTestShaders.blackHoleShader.setUniform("DiscDirection", discDirection);
-		SpaceTestShaders.blackHoleShader.setUniform("DiscColor", new Vector4f(3.9533494f, 0.9935119f, 0f, 0.7f));
-		SpaceTestShaders.blackHoleShader.setUniform("SSRadius", 0.2f);
-		SpaceTestShaders.blackHoleShader.setUniform("DiscInnerRadius", 0.3f);
-		SpaceTestShaders.blackHoleShader.setUniform("DiscOuterRadius", 64f);
-		SpaceTestShaders.blackHoleShader.setUniform("G", 6f);
+		ExtendedShaderInstance shader = SpaceTestShaders.getBlackHole();
+		shader.setSampler("DiffuseSampler", auxSampler);
+		shader.safeGetUniform("CameraPosition").set((float) camPos.x, (float) camPos.y, (float) camPos.z);
+		shader.safeGetUniform("ModelViewInverseMat").set(invModelView);
+		shader.safeGetUniform("Center").set(center);
+		shader.safeGetUniform("Radius").set(60f);
+		shader.safeGetUniform("DiscDirection").set(discDirection);
+		shader.safeGetUniform("DiscColor").set(3.9533494f, 0.9935119f, 0f, 0.8f);
+		// shader.setUniform("DiscSpeed", 2f);
+		shader.safeGetUniform("SSRadius").set(0.2f);
+		shader.safeGetUniform("DiscInnerRadius").set(0.3f);
+		shader.safeGetUniform("DiscOuterRadius").set(60f);
+		shader.safeGetUniform("G").set(6f);
 
 		sphere(buf.getBuffer(SpaceTestRenderTypes.BLACK_HOLE), mtx, 64f, 20, 20);
 		mtx.popPose();
 		((BufferSource) buf).endBatch();
+	}
+
+	@Override
+	public boolean shouldRenderOffScreen(BlackHoleBlockEntity be)
+	{
+		return true;
 	}
 
 	@Override

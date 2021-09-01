@@ -1,0 +1,194 @@
+{
+	"blend":
+	{
+		"func": "add",
+		"srcrgb": "srcalpha",
+		"dstrgb": "1-srcalpha"
+	},
+	"vertex": "blit",
+	"fragment": "spacetest:atmosphere",
+	"attributes":
+	[
+		"Position"
+	],
+	"samplers":
+	[
+		{
+			"name": "DiffuseSampler"
+		},
+		{
+			"name": "DiffuseDepthSampler"
+		}
+	],
+	"uniforms":
+	[
+		{
+			"name": "ProjMat",
+			"type": "matrix4x4",
+			"count": 16,
+			"values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]
+		},
+		{
+			"name": "OutSize",
+			"type": "float",
+			"count": 2,
+			"values": [ 1.0, 1.0 ]
+		},
+		{
+			"name": "CameraPosition",
+			"type": "float",
+			"count": 3,
+			"values": [ 0, 0, 0 ]
+		},
+		{
+			"name": "ProjInverseMat",
+			"type": "matrix4x4",
+			"count": 16,
+			"values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]
+		},
+		{
+			"name": "ViewInverseMat",
+			"type": "matrix4x4",
+			"count": 16,
+			"values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]
+		},
+		{
+			"name": "Center",
+			"type": "float",
+			"count": 3,
+			"values": [ 0, 0, 0 ]
+		},
+		{
+			"name": "LightDirection",
+			"type": "float",
+			"count": 3,
+			"values": [ 0, 1, 0 ],
+			"range":
+			{
+				"min": -1,
+				"max": 1
+			}
+		},
+		{
+			"name": "LightIntensity",
+			"type": "float",
+			"count": 3,
+			"values": [ 20, 20, 20 ],
+			"range":
+			{
+				"min": 0,
+				"max": 100
+			}
+		},
+		{
+			"name": "PlanetRadius",
+			"type": "float",
+			"count": 1,
+			"values": [ 64 ],
+			"range":
+			{
+				"min": 0,
+				"max": 128
+			}
+		},
+		{
+			"name": "AtmosphereRadius",
+			"type": "float",
+			"count": 1,
+			"values": [ 96 ],
+			"range":
+			{
+				"min": 0,
+				"max": 128
+			}
+		},
+		{
+			"name": "BetaRay",
+			"type": "float",
+			"count": 3,
+			"values": [ 1, 2, 3 ],
+			"range":
+			{
+				"min": 0,
+				"max": 10
+			}
+		},
+		{
+			"name": "BetaMie",
+			"type": "float",
+			"count": 3,
+			"values": [ 1, 1, 1 ],
+			"range":
+			{
+				"min": 0,
+				"max": 10
+			}
+		},
+		{
+			"name": "BetaAmbient",
+			"type": "float",
+			"count": 3,
+			"values": [ 0, 0, 0 ],
+			"range":
+			{
+				"min": 0,
+				"max": 10
+			}
+		},
+		{
+			"name": "BetaE",
+			"type": "float",
+			"count": 1,
+			"values": [ 0 ],
+			"range":
+			{
+				"min": 0,
+				"max": 100
+			}
+		},
+		{
+			"name": "G",
+			"type": "float",
+			"count": 1,
+			"values": [ 0.8 ],
+			"range":
+			{
+				"min": 0,
+				"max": 10
+			}
+		},
+		{
+			"name": "HeightRay",
+			"type": "float",
+			"count": 1,
+			"values": [ 0.5 ],
+			"range":
+			{
+				"min": 0,
+				"max": 100
+			}
+		},
+		{
+			"name": "HeightMie",
+			"type": "float",
+			"count": 1,
+			"values": [ 0.25 ],
+			"range":
+			{
+				"min": 0,
+				"max": 100
+			}
+		},
+		{
+			"name": "DensityMultiplier",
+			"type": "float",
+			"count": 1,
+			"values": [ 1 ],
+			"range":
+			{
+				"min": 0,
+				"max": 100
+			}
+		}
+	]
+}

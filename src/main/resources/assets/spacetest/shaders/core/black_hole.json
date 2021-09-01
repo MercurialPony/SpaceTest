@@ -5,8 +5,8 @@
 		"srcrgb": "srcalpha",
 		"dstrgb": "1-srcalpha"
 	},
-	"vertex": "spacetest/position",
-	"fragment": "spacetest/black_hole",
+	"vertex": "spacetest:black_hole",
+	"fragment": "spacetest:black_hole",
 	"attributes":
 	[
 		"Position"

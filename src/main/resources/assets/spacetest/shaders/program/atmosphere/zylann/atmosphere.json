@@ -1,0 +1,161 @@
+{
+	"blend":
+	{
+		"func": "add",
+		"srcrgb": "srcalpha",
+		"dstrgb": "1-srcalpha"
+	},
+	"vertex": "blit",
+	"fragment": "spacetest:atmosphere",
+	"attributes":
+	[
+		"Position"
+	],
+	"samplers":
+	[
+		{
+			"name": "DiffuseSampler"
+		},
+		{
+			"name": "DiffuseDepthSampler"
+		}
+	],
+	"uniforms":
+	[
+		{
+			"name": "ProjMat",
+			"type": "matrix4x4",
+			"count": 16,
+			"values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]
+		},
+		{
+			"name": "OutSize",
+			"type": "float",
+			"count": 2,
+			"values": [ 1.0, 1.0 ]
+		},
+		{
+			"name": "CameraPosition",
+			"type": "float",
+			"count": 3,
+			"values": [ 0, 0, 0 ]
+		},
+		{
+			"name": "ProjInverseMat",
+			"type": "matrix4x4",
+			"count": 16,
+			"values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]
+		},
+		{
+			"name": "ViewInverseMat",
+			"type": "matrix4x4",
+			"count": 16,
+			"values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]
+		},
+		{
+			"name": "Center",
+			"type": "float",
+			"count": 3,
+			"values": [ 0, 0, 0 ]
+		},
+		{
+			"name": "PlanetRadius",
+			"type": "float",
+			"count": 1,
+			"values": [ 64 ],
+			"range":
+			{
+				"min": 0,
+				"max": 128
+			}
+		},
+		{
+			"name": "AtmosphereHeight",
+			"type": "float",
+			"count": 1,
+			"values": [ 32 ],
+			"range":
+			{
+				"min": 0,
+				"max": 64
+			}
+		},
+		{
+			"name": "DayColor0",
+			"type": "float",
+			"count": 3,
+			"values": [ 0.5, 0.8, 1.0 ],
+			"range":
+			{
+				"min": 0,
+				"max": 1
+			}
+		},
+		{
+			"name": "DayColor1",
+			"type": "float",
+			"count": 3,
+			"values": [ 0.5, 0.8, 1.0 ],
+			"range":
+			{
+				"min": 0,
+				"max": 1
+			}
+		},
+		{
+			"name": "NightColor0",
+			"type": "float",
+			"count": 3,
+			"values": [ 0.2, 0.4, 0.8 ],
+			"range":
+			{
+				"min": 0,
+				"max": 1
+			}
+		},
+		{
+			"name": "NightColor1",
+			"type": "float",
+			"count": 3,
+			"values": [ 0.2, 0.4, 0.8 ],
+			"range":
+			{
+				"min": 0,
+				"max": 1
+			}
+		},
+		{
+			"name": "SunDirection",
+			"type": "float",
+			"count": 3,
+			"values": [ 0, 1, 0 ],
+			"range":
+			{
+				"min": -1,
+				"max": 1
+			}
+		},
+		{
+			"name": "Density",
+			"type": "float",
+			"count": 1,
+			"values": [ 0.2 ],
+			"range":
+			{
+				"min": 0,
+				"max": 1
+			}
+		},
+		{
+			"name": "AttenuationDistance",
+			"type": "float",
+			"count": 1,
+			"values": [ 0.0 ],
+			"range":
+			{
+				"min": 0,
+				"max": 1
+			}
+		}
+	]
+}

@@ -11,14 +11,9 @@ import net.minecraft.client.Minecraft;
 
 public class ExtendedTextureTarget extends TextureTarget
 {
-	public ExtendedTextureTarget(int width, int height, boolean p_166215_, boolean p_166216_)
+	public ExtendedTextureTarget(RenderTarget target, boolean useDepth)
 	{
-		super(width, height, p_166215_, p_166216_);
-	}
-
-	public ExtendedTextureTarget(RenderTarget target)
-	{
-		super(target.width, target.height, false, Minecraft.ON_OSX);
+		super(target.width, target.height, useDepth, Minecraft.ON_OSX);
 	}
 
 	public void copyColor(RenderTarget target)

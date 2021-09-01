@@ -1,13 +1,58 @@
 package melonslise.spacetest.client.event;
 
 import melonslise.spacetest.SpaceTest;
+import melonslise.spacetest.client.init.SpaceTestKeys;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = SpaceTest.ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class SpaceTestClientForgeEvents
 {
+	@SubscribeEvent
+	public static void onPreClientTick(ClientTickEvent e)
+	{
+		if(e.phase != TickEvent.Phase.START)
+			return;
+		Minecraft mc = Minecraft.getInstance();
+		// FIXME mixin to Minecraft#handleKeybinds?
+		if(mc.getOverlay() == null && (mc.screen == null || mc.screen.passEvents))
+			SpaceTestKeys.handle();
+	}
+
 	/*
+	@SubscribeEvent
+	public static void renderWorld(RenderTickEvent e)
+	{
+		Minecraft mc = Minecraft.getInstance();
+		if(mc.level == null || mc.isPaused() || e.phase == TickEvent.Phase.START)
+			return;
+
+		// RenderSystem.disableBlend();
+		// RenderSystem.disableDepthTest();
+		// RenderSystem.enableTexture();
+		// RenderSystem.resetTextureMatrix();
+		ExtendedPostChain postShader = SpaceTestShaders.getAtmosphere();
+		//postShader.process(e.renderTickTime);
+	}
+
+	public static Matrix4f getViewMatrix()
+	{
+		Camera cam = Minecraft.getInstance().gameRenderer.getMainCamera();
+		Vector3f up = cam.getUpVector();
+		Vector3f forward = cam.getLookVector();
+		Vector3f right = cam.getLeftVector();
+		return new Matrix4f(new float[]{
+			-right.x(), -right.y(), -right.z(), 0f,
+			-up.x(), -up.y(), -up.z(), 0f,
+			forward.x(), forward.y(), forward.z(), 0f,
+			0f, 0f, 0f, 1f
+		});
+	}
+
 	public static ExtendedPostChain shader = null;
 
 	public static ExtendedPostChain loadShader(ResourceLocation name)

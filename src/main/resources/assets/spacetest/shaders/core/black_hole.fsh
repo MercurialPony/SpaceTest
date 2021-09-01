@@ -347,9 +347,9 @@ void main()
 	vec2 distortedScreenUV = rayUVProjection.xy * 0.5 + 0.5;
 
 	// Screen and object edge transitions
-	float edgeFadex = smoothstep(0, 0.25, 1 - abs(remap(screenUV.x, 0, 1, -1, 1)));
-	float edgeFadey = smoothstep(0, 0.25, 1 - abs(remap(screenUV.y, 0, 1, -1, 1)));
-	float t = clamp(remap(outerSphereIntersection.y, Radius, 2 * Radius, 0, 1), 0, 1) * edgeFadex * edgeFadey;
+	// float edgeFadex = smoothstep(0, 0.5, 1 - abs(remap(screenUV.x, 0, 1, -1, 1)));
+	// float edgeFadey = smoothstep(0, 0.5, 1 - abs(remap(screenUV.y, 0, 1, -1, 1)));
+	float t = clamp(remap(outerSphereIntersection.y * outerSphereIntersection.y, Radius * Radius, 4 * Radius * Radius, 0, 1), 0, 1); //  * edgeFadex * edgeFadey;
 	distortedScreenUV = mix(screenUV, distortedScreenUV, t);
 
 	vec3 bgCol = texture(DiffuseSampler, distortedScreenUV).rgb * (1 - blackHoleMask);

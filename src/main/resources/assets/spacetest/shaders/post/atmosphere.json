@@ -6,9 +6,16 @@
 	"passes":
 	[
 		{
-			"name": "spacetest:test",
+			"name": "spacetest:atmosphere",
 			"intarget": "minecraft:main",
-			"outtarget": "swap"
+			"outtarget": "swap",
+			"auxtargets":
+			[
+				{
+					"name": "DiffuseDepthSampler",
+					"id": "minecraft:main:depth"
+				}
+			]
 		},
 		{
 			"name": "blit",

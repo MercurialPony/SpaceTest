@@ -2,6 +2,7 @@ package melonslise.spacetest.client.event;
 
 import melonslise.spacetest.SpaceTest;
 import melonslise.spacetest.client.init.SpaceTestBERs;
+import melonslise.spacetest.client.init.SpaceTestKeys;
 import melonslise.spacetest.client.init.SpaceTestShaders;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
@@ -16,6 +17,7 @@ public class SpaceTestClientModEvents
 	public static void setup(FMLClientSetupEvent e)
 	{
 		SpaceTestBERs.register();
+		SpaceTestKeys.register();
 	}
 
 	@SubscribeEvent

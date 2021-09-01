@@ -6,14 +6,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
-public class TestBlockEntity extends BlockEntity
+public class BlackHoleBlockEntity extends BlockEntity
 {
 	public final AABB renderBB;
 
-	public TestBlockEntity(BlockPos pos, BlockState state)
+	public BlackHoleBlockEntity(BlockPos pos, BlockState state)
 	{
-		super(SpaceTestBlockEntities.TEST.get(), pos, state);
-		this.renderBB = new AABB(pos.getX() - 64, pos.getY() - 64, pos.getZ() - 64, pos.getX() + 65, pos.getY() + 65, pos.getZ() + 65);
+		super(SpaceTestBlockEntities.BLACK_HOLE.get(), pos, state);
+		this.renderBB = new AABB(pos.getX() - 32, pos.getY() - 32, pos.getZ() - 32, pos.getX() + 33, pos.getY() + 33, pos.getZ() + 33);
 	}
 
 	@Override

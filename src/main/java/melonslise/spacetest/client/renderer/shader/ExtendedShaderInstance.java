@@ -1,34 +1,39 @@
 package melonslise.spacetest.client.renderer.shader;
 
 import java.io.IOException;
+import java.util.List;
 
+import com.google.gson.JsonElement;
+import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Vector3f;
 
-import melonslise.spacetest.client.util.UniformExtension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.ChainedJsonException;
 import net.minecraft.server.packs.resources.ResourceProvider;
 
-public class ExtendedShaderInstance extends ShaderInstance
+public class ExtendedShaderInstance extends ShaderInstance implements IShader
 {
-	public final UniformExtension uniforms = new UniformExtension();
-
-	public ExtendedShaderInstance(ResourceProvider provider, String name, VertexFormat format) throws IOException
+	public ExtendedShaderInstance(ResourceProvider provider, ResourceLocation id, VertexFormat format) throws IOException
 	{
-		super(provider, name, format);
+		super(provider, id, format);
 	}
 
-	public void setUniform(String name, Object value)
+	public ExtendedShaderInstance(String domain, String name, VertexFormat format) throws IOException
 	{
-		this.uniforms.setUniform(name, value);
+		this(Minecraft.getInstance().getResourceManager(), new ResourceLocation(domain, name), format);
 	}
 
 	@Override
-	public void apply()
+	public List<Uniform> getUniforms()
 	{
-		this.safeGetUniform("CameraPosition").set(new Vector3f(Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()));
-		this.uniforms.upload(this);
-		super.apply();
+		return this.uniforms;
+	}
+
+	@Override
+	public void parseUniformNode(JsonElement uniformElement) throws ChainedJsonException
+	{
+		this.uniforms.add(ExtendedUniform.parse(uniformElement, this));
 	}
 }

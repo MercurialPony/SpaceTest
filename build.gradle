@@ -13,8 +13,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = '1.0'
-group = 'com.yourname.modid'
-archivesBaseName = 'modid'
+group = 'melonslise.spacetest'
+archivesBaseName = 'spacetest'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
@@ -30,7 +30,7 @@ minecraft {
             property 'forge.logging.console.level', 'info'
 
             mods {
-                examplemod {
+                spacetest {
                     source sourceSets.main
                 }
             }
@@ -42,7 +42,7 @@ minecraft {
             property 'forge.logging.console.level', 'info'
 
             mods {
-                examplemod {
+                spacetest {
                     source sourceSets.main
                 }
             }
@@ -53,10 +53,10 @@ minecraft {
 
             property 'forge.logging.console.level', 'info'
 
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'spacetest', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                examplemod {
+                spacetest {
                     source sourceSets.main
                 }
             }
@@ -66,29 +66,19 @@ minecraft {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-repositories {
-    // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
-
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
-}
-
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.17.1-37.0.8'
+    minecraft 'net.minecraftforge:forge:1.17.1-37.0.25'
 }
 
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "examplemod",
-                "Specification-Vendor"    : "examplemodsareus",
-                "Specification-Version"   : "1", // We are version 1 of ourselves
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "examplemodsareus",
+                "Specification-Title"     : archivesBaseName,
+                "Specification-Vendor"    : "melonslise",
+                "Specification-Version"   : version,
+                "Implementation-Title"    : archivesBaseName,
+                "Implementation-Version"  : version,
+                "Implementation-Vendor"   : "melonslise",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

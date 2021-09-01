@@ -1,7 +1,7 @@
 package melonslise.spacetest.common.init;
 
 import melonslise.spacetest.SpaceTest;
-import melonslise.spacetest.common.block.TestBlock;
+import melonslise.spacetest.common.block.BlockWithEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -17,7 +17,9 @@ public final class SpaceTestBlocks
 
 	private SpaceTestBlocks() {}
 
-	public static final RegistryObject<Block> TEST = add("test", new TestBlock(BlockBehaviour.Properties.of(Material.STONE)));
+	public static final RegistryObject<Block>
+		BLACK_HOLE = add("black_hole", new BlockWithEntity(SpaceTestBlockEntities.BLACK_HOLE, BlockBehaviour.Properties.of(Material.STONE))),
+		PLANET = add("planet", new BlockWithEntity(SpaceTestBlockEntities.PLANET, BlockBehaviour.Properties.of(Material.STONE)));
 
 	public static RegistryObject<Block> add(String name, Block block)
 	{
