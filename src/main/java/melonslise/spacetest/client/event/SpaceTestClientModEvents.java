@@ -2,6 +2,7 @@ package melonslise.spacetest.client.event;
 
 import melonslise.spacetest.SpaceTest;
 import melonslise.spacetest.client.init.SpaceTestBERs;
+import melonslise.spacetest.client.init.SpaceTestDimensionEffects;
 import melonslise.spacetest.client.init.SpaceTestKeys;
 import melonslise.spacetest.client.init.SpaceTestShaders;
 import net.minecraftforge.api.distmarker.Dist;
@@ -18,6 +19,7 @@ public class SpaceTestClientModEvents
 	{
 		SpaceTestBERs.register();
 		SpaceTestKeys.register();
+		SpaceTestDimensionEffects.register();
 	}
 
 	@SubscribeEvent

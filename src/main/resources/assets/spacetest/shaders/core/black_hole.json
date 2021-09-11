@@ -5,7 +5,7 @@
 		"srcrgb": "srcalpha",
 		"dstrgb": "1-srcalpha"
 	},
-	"vertex": "spacetest:black_hole",
+	"vertex": "spacetest:blit_ms",
 	"fragment": "spacetest:black_hole",
 	"attributes":
 	[

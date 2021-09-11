@@ -15,26 +15,26 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public final class SpaceTestRenderTypes extends RenderType
 {
 	public static final RenderType BLACK_HOLE = create(SpaceTest.ID + ":black_hole", DefaultVertexFormat.POSITION, VertexFormat.Mode.TRIANGLES, 256, false, false, RenderType.CompositeState.builder()
-		.setShaderState(SpaceTestShaders.BLACK_HOLE_STATE)
+		.setShaderState(new RenderStateShard.ShaderStateShard(SpaceTestShaders::getBlackHole))
 		.setTextureState(new RenderStateShard.TextureStateShard(new ResourceLocation(SpaceTest.ID, "textures/misc/noise.png"), false, false))
 		.setCullState(NO_CULL) // FIXME do we need this?
 		.createCompositeState(false));
 
 	public static final RenderType SOLID_PLANET = create(SpaceTest.ID + ":solid_planet", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false, RenderType.CompositeState.builder()
 		.setLightmapState(LIGHTMAP)
-		.setShaderState(SpaceTestShaders.SOLID_PLANET_STATE)
+		.setShaderState(new RenderStateShard.ShaderStateShard(SpaceTestShaders::getSolidPlanet))
 		.setTextureState(BLOCK_SHEET_MIPPED)
 		.createCompositeState(true));
 
 	public static final RenderType CUTOUT_PLANET = create(SpaceTest.ID + ":cutout_planet", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 131072, true, false, RenderType.CompositeState.builder()
 		.setLightmapState(LIGHTMAP)
-		.setShaderState(SpaceTestShaders.CUTOUT_PLANET_STATE)
+		.setShaderState(new RenderStateShard.ShaderStateShard(SpaceTestShaders::getCutoutPlanet))
 		.setTextureState(BLOCK_SHEET)
 		.createCompositeState(true));
 
 	public static final RenderType TRANSLUCENT_PLANET = create(SpaceTest.ID + ":translucent_planet", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, true, RenderType.CompositeState.builder()
 		.setLightmapState(LIGHTMAP)
-		.setShaderState(SpaceTestShaders.TRANSLUCENT_STATE)
+		.setShaderState(new RenderStateShard.ShaderStateShard(SpaceTestShaders::getTranslucentPlanet))
 		.setTextureState(BLOCK_SHEET_MIPPED)
 		.setTransparencyState(TRANSLUCENT_TRANSPARENCY)
 		.setOutputState(TRANSLUCENT_TARGET)

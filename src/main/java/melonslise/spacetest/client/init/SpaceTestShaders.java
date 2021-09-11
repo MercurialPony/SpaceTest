@@ -11,7 +11,6 @@ import melonslise.spacetest.client.renderer.shader.ExtendedPostChain;
 import melonslise.spacetest.client.renderer.shader.ExtendedShaderInstance;
 import melonslise.spacetest.client.renderer.shader.IShader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,19 +21,14 @@ import net.minecraftforge.resource.VanillaResourceType;
 @OnlyIn(Dist.CLIENT)
 public final class SpaceTestShaders implements ResourceManagerReloadListener
 {
-	public static final RenderStateShard.ShaderStateShard
-		BLACK_HOLE_STATE = new RenderStateShard.ShaderStateShard(SpaceTestShaders::getBlackHole),
-		SOLID_PLANET_STATE = new RenderStateShard.ShaderStateShard(SpaceTestShaders::getSolidPlanet),
-		CUTOUT_PLANET_STATE = new RenderStateShard.ShaderStateShard(SpaceTestShaders::getCutoutPlanet),
-		TRANSLUCENT_STATE = new RenderStateShard.ShaderStateShard(SpaceTestShaders::getTranslucentPlanet);
-
 	protected static final List<IShader> SHADERS = new ArrayList<>(6);
 
 	protected static ExtendedShaderInstance
 		blackHole,
 		solidPlanet,
 		cutoutPlanet,
-		translucentPlanet;
+		translucentPlanet,
+		spaceSky;
 
 	protected static ExtendedPostChain
 		atmosphere;
@@ -47,6 +41,7 @@ public final class SpaceTestShaders implements ResourceManagerReloadListener
 		solidPlanet = add(new ExtendedShaderInstance(SpaceTest.ID, "solid_planet", DefaultVertexFormat.BLOCK));
 		cutoutPlanet = add(new ExtendedShaderInstance(SpaceTest.ID, "cutout_planet", DefaultVertexFormat.BLOCK));
 		translucentPlanet = add(new ExtendedShaderInstance(SpaceTest.ID, "translucent_planet", DefaultVertexFormat.BLOCK));
+		spaceSky = add(new ExtendedShaderInstance(SpaceTest.ID, "space_sky", DefaultVertexFormat.POSITION_TEX));
 
 		atmosphere = add(new ExtendedPostChain(SpaceTest.ID, "atmosphere"));
 	}
@@ -125,6 +120,11 @@ public final class SpaceTestShaders implements ResourceManagerReloadListener
 	public static ExtendedShaderInstance getTranslucentPlanet()
 	{
 		return translucentPlanet;
+	}
+
+	public static ExtendedShaderInstance getSpaceSky()
+	{
+		return spaceSky;
 	}
 
 	public static ExtendedPostChain getAtmosphere()

@@ -1,0 +1,14 @@
+{
+	"type": "spacetest:space",
+	"generator":
+	{
+		"type": "spacetest:space",
+		"seed": 0,
+		"biome_source":
+		{
+			"type": "minecraft:fixed",
+			"seed": 0,
+			"biome": "spacetest:void"
+		}
+	}
+}
