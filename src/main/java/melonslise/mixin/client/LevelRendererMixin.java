@@ -1,4 +1,9 @@
-package melonslise.spacetest.client.mixin;
+package melonslise.mixin.client;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -7,13 +12,27 @@ import com.mojang.math.Vector3f;
 
 import melonslise.spacetest.client.init.SpaceTestShaders;
 import melonslise.spacetest.client.renderer.shader.ExtendedPostChain;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EffectInstance;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LightTexture;
 
-// Mixin not available yet... Use js coremods!
+@Mixin(LevelRenderer.class)
 public class LevelRendererMixin
 {
-	public static void renderPreFabulous(PoseStack mtx)
+	@Inject(
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/renderer/LevelRenderer;renderDebug(Lnet/minecraft/client/Camera;)V"),
+		method = "renderLevel(Lcom/mojang/blaze3d/vertex/PoseStack;FJZLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/GameRenderer;Lnet/minecraft/client/renderer/LightTexture;Lcom/mojang/math/Matrix4f;)V")
+	public void renderLevel(PoseStack mtx, float frameTime, long nanoTime, boolean renderOutline, Camera camera, GameRenderer gameRenderer, LightTexture light, Matrix4f projMat, CallbackInfo ci)
+	{
+		renderPreFabulous(mtx);
+	}
+
+	private static void renderPreFabulous(PoseStack mtx)
 	{
 		ExtendedPostChain shaderChain = SpaceTestShaders.getAtmosphere();
 		EffectInstance shader = shaderChain.getMainShader();

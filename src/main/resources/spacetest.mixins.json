@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "melonslise.mixin",
+	"compatibilityLevel": "JAVA_16",
+	"refmap": "spacetest.refmap.json",
+	"mixins":
+	[
+		
+	],
+	"client":
+	[
+		"client.LevelRendererMixin"
+	],
+	"minVersion": "0.8"
+}
