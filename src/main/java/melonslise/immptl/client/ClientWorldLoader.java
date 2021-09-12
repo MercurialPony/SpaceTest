@@ -1,4 +1,4 @@
-package melonslise.immptl;
+package melonslise.immptl.client;
 
 import java.util.HashMap;
 import java.util.Map;
