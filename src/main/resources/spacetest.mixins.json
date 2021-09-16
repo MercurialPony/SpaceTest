@@ -9,7 +9,8 @@
 	],
 	"client":
 	[
-		"client.LevelRendererMixin"
+		"client.LevelRendererMixin",
+		"server.MixinChunkMap"
 	],
 	"minVersion": "0.8.4"
 }
