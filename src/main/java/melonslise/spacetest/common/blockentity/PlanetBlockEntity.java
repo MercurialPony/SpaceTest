@@ -1,12 +1,12 @@
 package melonslise.spacetest.common.blockentity;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
+
+import melonslise.immptl.common.world.chunk.ChunkLoaderManager;
+import melonslise.immptl.util.DimBlockPos;
+import melonslise.immptl.util.DimChunkPos;
 import melonslise.spacetest.SpaceTest;
 import melonslise.spacetest.common.init.SpaceTestBlockEntities;
-import melonslise.spacetest.common.util.DimBlockPos;
-import melonslise.spacetest.common.util.DimChunkPos;
-import melonslise.spacetest.common.util.Miscellaneous;
-import melonslise.spacetest.server.util.ChunkLoaderManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -33,49 +33,43 @@ public class PlanetBlockEntity extends BlockEntity
 	}
 
 	@Override
-	public void setLevel(@NotNull Level level) {
+	public void setLevel(@Nonnull Level level)
+	{
 		super.setLevel(level);
 		this.dimPos = new DimBlockPos(level.dimension(), this.getBlockPos());
 
-		//SpaceTest.LOGGER.info("Server-side: PlanetBlockEntity#setLevel method called for planet at " + this.getBlockPos());
+		// SpaceTest.LOGGER.info("Server-side: PlanetBlockEntity#setLevel method called
+		// for planet at " + this.getBlockPos());
 	}
 
 	@Override
-	public void setRemoved() {
+	public void setRemoved()
+	{
 		super.setRemoved();
-		if (this.level != null) {
-			if (!this.level.isClientSide()) {
-				//SpaceTest.LOGGER.info("Server-side: PlanetBlockEntity#setRemoved method called for planet at "+this.getBlockPos());
-				ChunkLoaderManager.DestroyChunkLoader(this.dimPos);
+		if (this.level != null)
+		{
+			if (!this.level.isClientSide())
+			{
+				// SpaceTest.LOGGER.info("Server-side: PlanetBlockEntity#setRemoved method called for planet at "+this.getBlockPos());
+				ChunkLoaderManager.destroyChunkLoader(this.dimPos);
 			}
 		}
-		else {
+		else
+		{
 			SpaceTest.LOGGER.warn("Level for " + this + " was never set.");
 		}
 	}
 
 	@Override
-	public void clearRemoved() {
+	public void clearRemoved()
+	{
 		super.clearRemoved();
-		if (this.level!=null) {
-			if (!this.level.isClientSide()) {
-				//SpaceTest.LOGGER.info("Server-side: PlanetBlockEntity#clearRemoved method called for planet at "+this.getBlockPos());
-				if (level instanceof ServerLevel) {
-					//SpaceTestLogger.LOGGER.info("Server side. Planet block created at " + this.getBlockPos());
-					ChunkPos thisChunkPos = new ChunkPos(this.getBlockPos());
-					ChunkPos startCorner = new ChunkPos(thisChunkPos.x-10, thisChunkPos.z-10);
-					ChunkLoaderManager.CreateChunkLoader(
-							this.dimPos,
-							new DimChunkPos(level.dimension(), startCorner),
-							21, 21);
-				}
-			}
+		if (this.level != null && !this.level.isClientSide)
+		{
+			// SpaceTestLogger.LOGGER.info("Server side. Planet block created at " + this.getBlockPos());
+			ChunkPos thisChunkPos = new ChunkPos(this.getBlockPos());
+			ChunkPos startCorner = new ChunkPos(thisChunkPos.x - 10, thisChunkPos.z - 10);
+			ChunkLoaderManager.createChunkLoader(this.dimPos, new DimChunkPos(level.dimension(), startCorner), 21, 21);
 		}
-	}
-
-	@Override
-	public void onChunkUnloaded() {
-		super.onChunkUnloaded();
-		//SpaceTest.LOGGER.info("Server-side: PlanetBlockEntity#onChunkUnloaded method called for planet at "+this.getBlockPos());
 	}
 }

@@ -1,6 +1,6 @@
 package melonslise.spacetest.common.init;
 
-import melonslise.spacetest.common.worldgen.SpaceChunkGenerator;
+import melonslise.spacetest.common.world.gen.SpaceChunkGenerator;
 import net.minecraft.core.Registry;
 
 public final class SpaceTestChunkGenerators

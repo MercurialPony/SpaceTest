@@ -1,4 +1,4 @@
-package melonslise.spacetest.common.worldgen;
+package melonslise.spacetest.common.world.gen;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
