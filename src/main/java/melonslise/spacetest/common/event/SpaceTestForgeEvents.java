@@ -1,5 +1,6 @@
 package melonslise.spacetest.common.event;
 
+import com.google.common.eventbus.Subscribe;
 import melonslise.immptl.common.world.chunk.ChunkLoaderManager;
 import melonslise.spacetest.SpaceTest;
 import net.minecraftforge.event.TickEvent;
@@ -30,6 +31,7 @@ public class SpaceTestForgeEvents
 		ChunkLoaderManager.onServerClosing(event.getServer());
 	}
 
+	@SubscribeEvent
 	public static void serverTick(TickEvent.ServerTickEvent e)
 	{
 		if(e.phase != TickEvent.Phase.START)

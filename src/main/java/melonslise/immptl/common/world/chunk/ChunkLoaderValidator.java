@@ -11,8 +11,13 @@ public class ChunkLoaderValidator implements ForgeChunkManager.LoadingValidation
 {
 	public void validateTickets(@Nonnull ServerLevel world, ForgeChunkManager.TicketHelper ticketHelper)
 	{
-		SpaceTest.LOGGER.info("Clearing old tickets.");
-		for (BlockPos pos : ticketHelper.getBlockTickets().keySet())
+		SpaceTest.LOGGER.info("Clearing old RenderLoader tickets.");
+		int i = 0;
+		for (BlockPos pos : ticketHelper.getBlockTickets().keySet()) {
 			ticketHelper.removeAllTickets(pos);
+			i++;
+		}
+		SpaceTest.LOGGER.info("Cleared " + i + " old tickets.");
 	}
+
 }

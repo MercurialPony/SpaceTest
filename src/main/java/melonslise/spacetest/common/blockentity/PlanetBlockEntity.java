@@ -18,12 +18,20 @@ import net.minecraft.world.phys.AABB;
 public class PlanetBlockEntity extends BlockEntity
 {
 	public final AABB renderBB;
-	private DimBlockPos dimPos = null;
+	private DimBlockPos dimPos;
+	private DimChunkPos renderTargetStartCorner;
+	private int renderXWidth;
+	private int renderZWidth;
 
 	public PlanetBlockEntity(BlockPos pos, BlockState state)
 	{
 		super(SpaceTestBlockEntities.PLANET.get(), pos, state);
 		this.renderBB = new AABB(pos.getX() - 64, pos.getY() - 64, pos.getZ() - 64, pos.getX() + 65, pos.getY() + 65, pos.getZ() + 65);
+		this.renderXWidth = 21;
+		this.renderZWidth = 21;
+		ChunkPos thisLoc = new ChunkPos(pos);
+		this.renderTargetStartCorner = new DimChunkPos(Level.OVERWORLD,
+				new ChunkPos(thisLoc.x-this.renderXWidth/2, thisLoc.z-this.renderZWidth/2));
 	}
 
 	@Override
@@ -69,7 +77,7 @@ public class PlanetBlockEntity extends BlockEntity
 			// SpaceTestLogger.LOGGER.info("Server side. Planet block created at " + this.getBlockPos());
 			ChunkPos thisChunkPos = new ChunkPos(this.getBlockPos());
 			ChunkPos startCorner = new ChunkPos(thisChunkPos.x - 10, thisChunkPos.z - 10);
-			ChunkLoaderManager.createChunkLoader(this.dimPos, new DimChunkPos(level.dimension(), startCorner), 21, 21);
+			ChunkLoaderManager.createChunkLoader(this.dimPos, renderTargetStartCorner, this.renderXWidth, this.renderZWidth);
 		}
 	}
 }

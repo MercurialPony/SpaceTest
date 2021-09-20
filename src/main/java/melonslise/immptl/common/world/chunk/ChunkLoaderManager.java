@@ -46,7 +46,7 @@ public class ChunkLoaderManager
 			return false;
 		}
 
-		ChunkPos end = new ChunkPos(startCorner.pos.x + xWidth, startCorner.pos.z + zWidth);
+		ChunkPos end = new ChunkPos(startCorner.pos.x + xWidth-1, startCorner.pos.z + zWidth-1);
 		SpaceTest.LOGGER.info("Creating chunkloader for block at " + owner + ".\n\tTarget dimension: " + startCorner.dimension.location() + "\n\tStart chunk: " + startCorner + "\n\tEnd corner: " + end);
 
 		// Make sure the owner's dimension exists in our map
@@ -60,7 +60,7 @@ public class ChunkLoaderManager
 		ChunkLoader loader = new ChunkLoader(owner, startCorner, xWidth, zWidth);
 		chunkLoaders.get(owner.dimension).put(owner.pos, loader);
 		SpaceTest.LOGGER.debug("Chunkloader created for owner at " + owner + ".");
-		updateChunkLoader(loader);
+		//updateChunkLoader(loader);
 		return true;
 	}
 
@@ -97,11 +97,15 @@ public class ChunkLoaderManager
 			ServerLevel level = server.getLevel(owner.dimension);
 			if (level != null)
 			{
+				int i = 0;
 				loader.active = true;
 				for (ChunkPos pos : loader.chunks)
 				{
-					ForgeChunkManager.forceChunk(level, SpaceTest.ID, owner.pos, pos.x, pos.z, true, false);
+					if (ForgeChunkManager.forceChunk(level, SpaceTest.ID, owner.pos, pos.x, pos.z, true, false)) {
+						i++;
+					}
 				}
+				SpaceTest.LOGGER.info("Forced " + i + " of " + loader.chunks.size()+" chunks.");
 			}
 			else
 			{
@@ -138,11 +142,15 @@ public class ChunkLoaderManager
 			ServerLevel level = server.getLevel(owner.dimension);
 			if (level != null)
 			{
+				int i = 0;
 				for (ChunkPos pos : chunkLoaders.get(owner.dimension).get(owner.pos).chunks)
 				{
-					ForgeChunkManager.forceChunk(level, SpaceTest.ID, owner.pos, pos.x, pos.z, false, false);
+					if (ForgeChunkManager.forceChunk(level, SpaceTest.ID, owner.pos, pos.x, pos.z, false, false)) {
+						i++;
+					}
 				}
 				loader.active = false;
+				SpaceTest.LOGGER.info("Unforced " + i + " of " + loader.chunks.size()+" chunks.");
 			}
 			else
 			{
@@ -293,12 +301,12 @@ public class ChunkLoaderManager
 			this.targetDimension = startCorner.dimension;
 
 			chunks = new HashSet<ChunkPos>(xWidth * zWidth);
-			ChunkPos endCorner = new ChunkPos(startCorner.pos.x + xWidth, startCorner.pos.z + zWidth);
+			ChunkPos endCorner = new ChunkPos(startCorner.pos.x + xWidth-1, startCorner.pos.z + zWidth-1);
 
 			// Set of chunks
-			for (int x = startCorner.pos.x; x < endCorner.x; x++)
+			for (int x = startCorner.pos.x; x <= endCorner.x; x++)
 			{
-				for (int z = startCorner.pos.z; z < endCorner.z; z++)
+				for (int z = startCorner.pos.z; z <= endCorner.z; z++)
 				{
 					chunks.add(new ChunkPos(x, z));
 				}
