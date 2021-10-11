@@ -1,13 +1,7 @@
 package melonslise.spacetest.client.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
 import melonslise.spacetest.client.gui.widget.SmallLabelledEditBox;
 import melonslise.spacetest.client.gui.widget.SmallSlider;
@@ -20,6 +14,10 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ShaderInspectorScreen extends Screen
 {

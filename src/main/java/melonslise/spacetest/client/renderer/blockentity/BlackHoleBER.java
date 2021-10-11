@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
-
 import melonslise.spacetest.client.init.SpaceTestRenderTypes;
 import melonslise.spacetest.client.init.SpaceTestShaders;
 import melonslise.spacetest.client.renderer.shader.ExtendedShaderInstance;

@@ -1,7 +1,5 @@
 package melonslise.spacetest.common.init;
 
-import java.util.function.Supplier;
-
 import melonslise.spacetest.SpaceTest;
 import melonslise.spacetest.common.blockentity.BlackHoleBlockEntity;
 import melonslise.spacetest.common.blockentity.PlanetBlockEntity;
@@ -12,6 +10,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplie
 import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.function.Supplier;
 
 public class SpaceTestBlockEntities
 {

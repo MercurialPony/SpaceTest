@@ -1,12 +1,11 @@
 package melonslise.spacetest.client.init;
 
-import org.lwjgl.glfw.GLFW;
-
 import melonslise.spacetest.SpaceTest;
 import melonslise.spacetest.client.gui.ShaderInspectorScreen;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
+import org.lwjgl.glfw.GLFW;
 
 public final class SpaceTestKeys
 {

@@ -1,13 +1,9 @@
 package melonslise.spacetest.client.renderer.shader;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.shaders.Uniform;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.client.renderer.PostChain;
@@ -17,6 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import java.io.IOException;
+import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public class ExtendedPostChain extends PostChain implements IShader

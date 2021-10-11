@@ -1,12 +1,12 @@
 package melonslise.immptl.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientWorldLoader
 {

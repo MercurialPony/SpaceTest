@@ -3,13 +3,19 @@
 	"package": "melonslise.mixin",
 	"compatibilityLevel": "JAVA_16",
 	"refmap": "spacetest.refmap.json",
-	"mixins":
-	[
-		
-	],
+	"mixins": [
+      "server.Mixin_ChunkMap_CustomChunkSending",
+      "server.Mixin_ChunkMap_Debug"
+    ],
 	"client":
 	[
-		"client.LevelRendererMixin"
+		"client.LevelRendererMixin",
+		"client.Mixin_ClientLevel_CustomChunkStorage",
+		"client.Mixin_LevelRenderer_CustomViewArea"
+	],
+	"server":
+	[
+
 	],
 	"minVersion": "0.8.4"
 }

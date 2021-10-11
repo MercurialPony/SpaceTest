@@ -1,11 +1,11 @@
 package melonslise.immptl.common.world.chunk;
 
-import javax.annotation.Nonnull;
-
 import melonslise.spacetest.SpaceTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.world.ForgeChunkManager;
+
+import javax.annotation.Nonnull;
 
 public class ChunkLoaderValidator implements ForgeChunkManager.LoadingValidationCallback
 {
@@ -17,7 +17,6 @@ public class ChunkLoaderValidator implements ForgeChunkManager.LoadingValidation
 			ticketHelper.removeAllTickets(pos);
 			i++;
 		}
-		SpaceTest.LOGGER.info("Cleared " + i + " old tickets.");
+		SpaceTest.LOGGER.info("Cleared old tickets for " + i + " blocks.");
 	}
-
 }

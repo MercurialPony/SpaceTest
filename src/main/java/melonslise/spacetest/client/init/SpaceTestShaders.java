@@ -1,11 +1,6 @@
 package melonslise.spacetest.client.init;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-
 import melonslise.spacetest.SpaceTest;
 import melonslise.spacetest.client.renderer.shader.ExtendedPostChain;
 import melonslise.spacetest.client.renderer.shader.ExtendedShaderInstance;
@@ -17,6 +12,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.resource.IResourceType;
 import net.minecraftforge.resource.VanillaResourceType;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
 public final class SpaceTestShaders implements ResourceManagerReloadListener

@@ -1,17 +1,16 @@
 package melonslise.spacetest.client.renderer.shader;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.VertexFormat;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ChainedJsonException;
 import net.minecraft.server.packs.resources.ResourceProvider;
+
+import java.io.IOException;
+import java.util.List;
 
 public class ExtendedShaderInstance extends ShaderInstance implements IShader
 {

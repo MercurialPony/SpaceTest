@@ -1,8 +1,5 @@
 package melonslise.spacetest.client.renderer.blockentity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,7 +7,7 @@ import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
-
+import melonslise.immptl.client.ClientImmutableRenderLoader;
 import melonslise.spacetest.client.init.SpaceTestRenderTypes;
 import melonslise.spacetest.client.init.SpaceTestShaders;
 import melonslise.spacetest.client.renderer.shader.ExtendedShaderInstance;
@@ -29,6 +26,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @OnlyIn(Dist.CLIENT)
 public class PlanetBER implements BlockEntityRenderer<PlanetBlockEntity>
 {
@@ -40,61 +40,69 @@ public class PlanetBER implements BlockEntityRenderer<PlanetBlockEntity>
 	@Override
 	public void render(PlanetBlockEntity be, float frameTime, PoseStack mtx, MultiBufferSource bufSrc, int light, int overlay)
 	{
-		Minecraft mc = Minecraft.getInstance();
-		Vec3 camPos = mc.gameRenderer.getMainCamera().getPosition();
-		BlockPos pos = be.getBlockPos();
-		mtx.pushPose();
+		// FIXME Fix client-side code.
+//		ClientImmutableRenderLoader loader = be.getRenderLoader();
+//		if (loader != null)
+		{
+//			Iterable<RenderChunk> renderChunks = loader.getRenderChunks();
+//			if (renderChunks != null)
+			{
+				Minecraft mc = Minecraft.getInstance();
+				Vec3 camPos = mc.gameRenderer.getMainCamera().getPosition();
+				BlockPos pos = be.getBlockPos();
+				mtx.pushPose();
 
-		float rot = (mc.level.getGameTime() + frameTime) / 600f;
-		mtx.mulPose(Vector3f.XP.rotation(rot));
-		mtx.mulPose(Vector3f.YP.rotation(rot));
-		mtx.mulPose(Vector3f.ZP.rotation(rot));
-		// mtx.scale(2f, 2f, 2f);
-		mtx.translate(-pos.getX() + camPos.x, -pos.getY() + camPos.y, -pos.getZ() + camPos.z);
+				float rot = (mc.level.getGameTime() + frameTime) / 600f;
+				mtx.mulPose(Vector3f.XP.rotation(rot));
+				mtx.mulPose(Vector3f.YP.rotation(rot));
+				mtx.mulPose(Vector3f.ZP.rotation(rot));
+				// mtx.scale(2f, 2f, 2f);
+				mtx.translate(-pos.getX() + camPos.x, -pos.getY() + camPos.y, -pos.getZ() + camPos.z);
 
-		final int xChunks = 10, zChunks = 10;
-		final int maxU = (xChunks * 2 + 1) * 16, maxV = (zChunks * 2 + 1) * 16;
+				final int xChunks = 10, zChunks = 10;
+				final int maxU = (xChunks * 2 + 1) * 16, maxV = (zChunks * 2 + 1) * 16;
 
-		ChunkPos chPos = new ChunkPos(pos);
-		BlockPos cornerPos = new ChunkPos(chPos.x - xChunks, chPos.z - zChunks).getWorldPosition();
+				ChunkPos chPos = new ChunkPos(pos);
+				BlockPos cornerPos = new ChunkPos(chPos.x - xChunks, chPos.z - zChunks).getWorldPosition();
 
-		BlockPos tr = pos.subtract(cornerPos);
-		mtx.translate(tr.getX(), tr.getY(), tr.getZ());
+				BlockPos tr = pos.subtract(cornerPos);
+				mtx.translate(tr.getX(), tr.getY(), tr.getZ());
 
-		List<RenderChunk> chunks = new ArrayList<>(9 * 16);
-		for(int x = -xChunks; x <= xChunks; ++x)
-			for(int z = -zChunks; z <= zChunks; ++z)
-				for(int y = 0; y < 16; ++y)
-				{
-					RenderChunk chunk = mc.levelRenderer.viewArea.getRenderChunkAt(new ChunkPos(chPos.x + x, chPos.z + z).getWorldPosition().atY(y * 16));
-					chunks.add(chunk);
-				}
+				List<RenderChunk> chunks = new ArrayList<>(9 * 16);
+				for (int x = -xChunks; x <= xChunks; ++x)
+					for (int z = -zChunks; z <= zChunks; ++z)
+						for (int y = 0; y < 16; ++y) {
+							RenderChunk chunk = mc.levelRenderer.viewArea.getRenderChunkAt(new ChunkPos(chPos.x + x, chPos.z + z).getWorldPosition().atY(y * 16));
+							chunks.add(chunk);
+						}
 
-		ExtendedShaderInstance shader;
-		shader = SpaceTestShaders.getSolidPlanet();
-		shader.safeGetUniform("CameraPosition").set((float) camPos.x, (float) camPos.y, (float) camPos.z);
-		shader.safeGetUniform("Corner").set((float) cornerPos.getX(), (float) cornerPos.getY(), (float) cornerPos.getZ());
-		shader.safeGetUniform("MaxUV").set((float) maxU, (float) maxV);
+				ExtendedShaderInstance shader;
+				shader = SpaceTestShaders.getSolidPlanet();
+				shader.safeGetUniform("CameraPosition").set((float) camPos.x, (float) camPos.y, (float) camPos.z);
+				shader.safeGetUniform("Corner").set((float) cornerPos.getX(), (float) cornerPos.getY(), (float) cornerPos.getZ());
+				shader.safeGetUniform("MaxUV").set((float) maxU, (float) maxV);
 
-		shader = SpaceTestShaders.getCutoutPlanet();
-		shader.safeGetUniform("CameraPosition").set((float) camPos.x, (float) camPos.y, (float) camPos.z);
-		shader.safeGetUniform("Corner").set((float) cornerPos.getX(), (float) cornerPos.getY(), (float) cornerPos.getZ());
-		shader.safeGetUniform("MaxUV").set((float) maxU, (float) maxV);
+				shader = SpaceTestShaders.getCutoutPlanet();
+				shader.safeGetUniform("CameraPosition").set((float) camPos.x, (float) camPos.y, (float) camPos.z);
+				shader.safeGetUniform("Corner").set((float) cornerPos.getX(), (float) cornerPos.getY(), (float) cornerPos.getZ());
+				shader.safeGetUniform("MaxUV").set((float) maxU, (float) maxV);
 
-		shader = SpaceTestShaders.getTranslucentPlanet();
-		shader.safeGetUniform("CameraPosition").set((float) camPos.x, (float) camPos.y, (float) camPos.z);
-		shader.safeGetUniform("Corner").set((float) cornerPos.getX(), (float) cornerPos.getY(), (float) cornerPos.getZ());
-		shader.safeGetUniform("MaxUV").set((float) maxU, (float) maxV);
+				shader = SpaceTestShaders.getTranslucentPlanet();
+				shader.safeGetUniform("CameraPosition").set((float) camPos.x, (float) camPos.y, (float) camPos.z);
+				shader.safeGetUniform("Corner").set((float) cornerPos.getX(), (float) cornerPos.getY(), (float) cornerPos.getZ());
+				shader.safeGetUniform("MaxUV").set((float) maxU, (float) maxV);
 
-		renderChunks(chunks, RenderType.solid(), SpaceTestRenderTypes.SOLID_PLANET, mtx, camPos.x, camPos.y, camPos.z, RenderSystem.getProjectionMatrix());
-		renderChunks(chunks, RenderType.cutout(), SpaceTestRenderTypes.CUTOUT_PLANET, mtx, camPos.x, camPos.y, camPos.z, RenderSystem.getProjectionMatrix());
-		renderChunks(chunks, RenderType.cutoutMipped(), SpaceTestRenderTypes.CUTOUT_PLANET, mtx, camPos.x, camPos.y, camPos.z, RenderSystem.getProjectionMatrix());
-		renderChunks(chunks, RenderType.translucent(), SpaceTestRenderTypes.TRANSLUCENT_PLANET, mtx, camPos.x, camPos.y, camPos.z, RenderSystem.getProjectionMatrix());
+				renderChunks(chunks, RenderType.solid(), SpaceTestRenderTypes.SOLID_PLANET, mtx, camPos.x, camPos.y, camPos.z, RenderSystem.getProjectionMatrix());
+				renderChunks(chunks, RenderType.cutout(), SpaceTestRenderTypes.CUTOUT_PLANET, mtx, camPos.x, camPos.y, camPos.z, RenderSystem.getProjectionMatrix());
+				renderChunks(chunks, RenderType.cutoutMipped(), SpaceTestRenderTypes.CUTOUT_PLANET, mtx, camPos.x, camPos.y, camPos.z, RenderSystem.getProjectionMatrix());
+				renderChunks(chunks, RenderType.translucent(), SpaceTestRenderTypes.TRANSLUCENT_PLANET, mtx, camPos.x, camPos.y, camPos.z, RenderSystem.getProjectionMatrix());
 
-		mtx.popPose();
+				mtx.popPose();
 
-		EffectInstance postShader = SpaceTestShaders.getAtmosphere().getMainShader();
-		postShader.safeGetUniform("Center").set(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f);
+				EffectInstance postShader = SpaceTestShaders.getAtmosphere().getMainShader();
+				postShader.safeGetUniform("Center").set(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f);
+			}
+		}
 	}
 
 	public static void renderChunks(List<RenderChunk> chunks, RenderType layer, RenderType newLayer, PoseStack mtx, double camX, double camY, double camZ, Matrix4f proj)

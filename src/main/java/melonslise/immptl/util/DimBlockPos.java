@@ -20,4 +20,20 @@ public class DimBlockPos
 	{
 		return "dimensional block position " + pos.toString() + " in dimension " + dimension.location();
 	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (!(obj instanceof DimBlockPos))
+		{
+			return false;
+		}
+		return ((DimBlockPos) obj).dimension.equals(this.dimension) && ((DimBlockPos) obj).pos.equals((this.pos));
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return this.dimension.hashCode()*this.pos.hashCode();
+	}
 }

@@ -1,13 +1,11 @@
 package melonslise.spacetest.client.renderer.shader;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
-
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
-
 import net.minecraft.client.Minecraft;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 public class ExtendedTextureTarget extends TextureTarget
 {

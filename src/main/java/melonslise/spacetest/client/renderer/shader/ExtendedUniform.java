@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.shaders.Shader;
 import com.mojang.blaze3d.shaders.Uniform;
-
 import net.minecraft.server.ChainedJsonException;
 import net.minecraft.util.GsonHelper;
 
