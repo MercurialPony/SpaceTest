@@ -1,0 +1,7 @@
+{
+	"type": "spacetest:space",
+	"generator":
+	{
+		"type": "spacetest:void"
+	}
+}

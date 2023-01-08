@@ -1,0 +1,39 @@
+{
+	"schemaVersion": 1,
+	"id": "spacetest",
+	"version": "${version}",
+
+	"name": "SpaceTest",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [ "Me!" ],
+	"contact":
+	{
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+
+	"license": "CC0-1.0",
+	"icon": "assets/modid/icon.png",
+
+	"environment": "*",
+	"entrypoints":
+	{
+		"main": [ "melonslise.spacetest.SpaceTestCore" ],
+		"client": [ "melonslise.spacetest.client.SpaceTestClient" ]
+	},
+	"mixins":
+	[
+		"spacetest.mixins.json"
+	],
+	"accessWidener": "spacetest.accesswidener",
+
+	"depends":
+	{
+		"fabricloader": ">=0.14.9",
+		"fabric-api": "*",
+		"minecraft": "~1.19",
+		"java": ">=17",
+		"imm_ptl_core": ">=2.2.3",
+		"satin": ">=1.9.0"
+	}
+}
