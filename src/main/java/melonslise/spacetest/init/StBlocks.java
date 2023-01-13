@@ -1,7 +1,7 @@
 package melonslise.spacetest.init;
 
 import melonslise.spacetest.SpaceTestCore;
-import melonslise.spacetest.block.SpecialBlock;
+import melonslise.spacetest.block.PlanetBlock;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -13,7 +13,7 @@ public final class StBlocks
 {
 	private StBlocks() {}
 
-	public static final Block PLANET = register("planet", new SpecialBlock(() -> StBlockEntities.PLANET, FabricBlockSettings.of(Material.STONE)));
+	public static final Block PLANET = register("planet", new PlanetBlock<>(() -> StBlockEntities.PLANET, FabricBlockSettings.of(Material.STONE)));
 
 	private static Block register(String name, Block block)
 	{

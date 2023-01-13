@@ -20,12 +20,14 @@ uniform int FaceSize;
 uniform int FaceIndex;
 uniform int SeaLevel;
 
+uniform float GameTime;
+
 out float vertexDistance;
 out vec4 vertexColor;
 out vec2 texCoord0;
 out vec4 normal;
 
-vec3 toCube(int index, float u, float v)
+vec3 planeToCube(int index, float u, float v)
 {
 	float uc = 2.0f * u - 1.0f;
 	float vc = 2.0f * v - 1.0f;
@@ -63,22 +65,27 @@ void main()
 	vec3 pos = Position + ChunkOffset;
 	// world space
 	pos += CameraPosition;
+
 	// plane space
 	pos -= Corner;
 
 	float u = pos.x / FaceSize;
 	float v = pos.z / FaceSize;
-	float h = pos.y + FaceSize / 2 - SeaLevel;
 
-	pos = cubeToSphereAdjusted(toCube(FaceIndex, u, v), h);
+	// arc length = radius difference
+	float w = (FaceSize * 4.0) / (FaceSize * 4.0 - 2.0 * 3.14159);
+	float s =  1.0 / (pow(w, SeaLevel + 64.0) - pow(w, SeaLevel + 63.0)); // precalculate
+	float h = s * pow(w, pos.y);
+
+	pos = cubeToSphereAdjusted(planeToCube(FaceIndex, u, v), h);
 
 	// back to player space
 	pos += -CameraPosition;
 
 	gl_Position = ProjMat * ModelViewMat * vec4(pos, 1.0);
 
-	vertexDistance = length((ModelViewMat * vec4(pos, 1.0)).xyz);
+	//vertexDistance = length((ModelViewMat * vec4(pos, 1.0)).xyz);
 	vertexColor = Color * minecraft_sample_lightmap(Sampler2, UV2);
 	texCoord0 = UV0;
-	normal = ProjMat * ModelViewMat * vec4(Normal, 0.0);
+	//normal = ProjMat * ModelViewMat * vec4(Normal, 0.0);
 }

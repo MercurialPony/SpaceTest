@@ -16,6 +16,8 @@ public final class StShaders
 	public static final ManagedCoreShader PLANET_CUTOUT = ShaderEffectManager.getInstance().manageCoreShader(SpaceTestCore.id("planet_cutout"), VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
 	public static final ManagedCoreShader PLANET_TRANSLUCENT = ShaderEffectManager.getInstance().manageCoreShader(SpaceTestCore.id("planet_translucent"), VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
 
+	public static final ManagedCoreShader[] PLANET_SHADERS = new ManagedCoreShader[] { PLANET_SOLID, PLANET_CUTOUT, PLANET_TRANSLUCENT };
+
 	public static void register()
 	{
 		// NO OP

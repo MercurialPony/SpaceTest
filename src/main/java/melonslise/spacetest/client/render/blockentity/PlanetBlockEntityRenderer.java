@@ -27,10 +27,13 @@ public class PlanetBlockEntityRenderer implements BlockEntityRenderer<PlanetBloc
 		if(be.pr == null)
 		{
 			be.pr = new PlanetRenderer();
-			be.pr.init(World.OVERWORLD, new ChunkPos(pos), 10, 10);
+			be.pr.init(World.OVERWORLD, new ChunkPos(pos), be.faceSize);
 		}
 
+		mtx.push();
+		mtx.translate(0.5d, 0.5d, 0.5d);
 		be.pr.render(mtx, frameDelta);
+		mtx.pop();
 	}
 
 	@Override

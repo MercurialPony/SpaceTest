@@ -6,7 +6,7 @@
 		"dstrgb": "1-srcalpha"
 	},
 	"vertex": "spacetest:planet_cubemap",
-	"fragment": "rendertype_cutout",
+	"fragment": "spacetest:planet_cutout",
 	"attributes":
 	[
 		"Position",
@@ -51,24 +51,6 @@
 			"values": [ 1.0, 1.0, 1.0, 1.0 ]
 		},
 		{
-			"name": "FogStart",
-			"type": "float",
-			"count": 1,
-			"values": [ 0.0 ]
-		},
-		{
-			"name": "FogEnd",
-			"type": "float",
-			"count": 1,
-			"values": [ 1.0 ]
-		},
-		{
-			"name": "FogColor",
-			"type": "float",
-			"count": 4,
-			"values": [ 0.0, 0.0, 0.0, 0.0 ]
-		},
-		{
 			"name": "CameraPosition",
 			"type": "float",
 			"count": 3,
@@ -97,6 +79,12 @@
 			"type": "int",
 			"count": 1,
 			"values": [ 62 ]
+		},
+		{
+			"name": "GameTime",
+			"type": "float",
+			"count": 1,
+			"values": [ 0 ]
 		}
 	]
 }
