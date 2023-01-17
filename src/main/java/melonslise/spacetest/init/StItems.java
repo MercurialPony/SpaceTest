@@ -2,18 +2,11 @@ package melonslise.spacetest.init;
 
 import melonslise.spacetest.SpaceTestCore;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.chunk.ChunkBuilder;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
 
 public final class StItems
 {
@@ -21,15 +14,30 @@ public final class StItems
 
 	public static final ItemGroup MAIN_ITEM_TAB = FabricItemGroupBuilder.build(SpaceTestCore.id("main"), () -> new ItemStack(Items.APPLE));
 
+	/*
 	public static final Item TEST_ITEM = register("test_item", new Item(new Item.Settings().group(MAIN_ITEM_TAB))
 	{
 		@Override
 		public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand)
 		{
+			if(!world.isClient)
+			{
+				return super.use(world, user, hand);
+			}
+
+			ChunkPos.stream(new ChunkPos(user.getBlockPos()), 8)
+				.map(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z))
+				.flatMap(chunk -> chunk.getBlockEntities().values().stream())
+				.filter(be -> be.getType() == StBlockEntities.PLANET)
+				.findFirst()
+				.ifPresent(be ->
+					System.out.println(PlanetProjection.planetToSpace(((PlanetBlockEntity) be).planetProps, new Vec3f(user.getPos()))));
 
 			return super.use(world, user, hand);
 		}
 	});
+
+	 */
 
 	private static Item register(String name, Item item)
 	{

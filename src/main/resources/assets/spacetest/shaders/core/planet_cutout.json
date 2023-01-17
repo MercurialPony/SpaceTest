@@ -75,10 +75,16 @@
 			"values": [ 0 ]
 		},
 		{
-			"name": "SeaLevel",
-			"type": "int",
+			"name": "StartRadius",
+			"type": "float",
 			"count": 1,
-			"values": [ 62 ]
+			"values": [ 0.1 ]
+		},
+		{
+			"name": "RadiusRatio",
+			"type": "float",
+			"count": 1,
+			"values": [ 0.1 ]
 		},
 		{
 			"name": "GameTime",

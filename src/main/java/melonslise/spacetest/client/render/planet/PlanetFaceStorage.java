@@ -1,8 +1,14 @@
-package melonslise.spacetest.client.render;
+package melonslise.spacetest.client.render.planet;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.util.math.ChunkSectionPos;
 
+/**
+ * Is essentially the vanilla BuiltChunkStorage but adapted to be more efficient for a single face of a planet
+ */
+@Environment(EnvType.CLIENT)
 public class PlanetFaceStorage
 {
 	public ChunkSectionPos cornerChunkPos;

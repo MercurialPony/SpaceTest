@@ -1,5 +1,6 @@
-package melonslise.spacetest.util;
+package melonslise.spacetest.planet;
 
+import melonslise.spacetest.util.ArrayIterator;
 import net.minecraft.util.math.ChunkSectionPos;
 import org.jetbrains.annotations.NotNull;
 

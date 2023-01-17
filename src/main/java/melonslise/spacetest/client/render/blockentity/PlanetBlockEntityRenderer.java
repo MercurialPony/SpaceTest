@@ -1,15 +1,13 @@
 package melonslise.spacetest.client.render.blockentity;
 
 import melonslise.spacetest.blockentity.PlanetBlockEntity;
-import melonslise.spacetest.client.render.PlanetRenderer;
+import melonslise.spacetest.client.render.planet.PlanetRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 // FIXME test chunk updating when placing blocks and stuff in multiplayer
@@ -22,13 +20,16 @@ public class PlanetBlockEntityRenderer implements BlockEntityRenderer<PlanetBloc
 	@Override
 	public void render(PlanetBlockEntity be, float frameDelta, MatrixStack mtx, VertexConsumerProvider vertexConsumers, int light, int overlay)
 	{
-		BlockPos pos = be.getPos();
-
 		if(be.pr == null)
 		{
-			be.pr = new PlanetRenderer();
-			be.pr.init(World.OVERWORLD, new ChunkPos(pos), be.faceSize);
-		}
+			if(be.planetProps != null)
+			{
+				be.pr = new PlanetRenderer();
+				be.pr.init(World.OVERWORLD, be.planetProps);
+			}
+
+			return;
+		};
 
 		mtx.push();
 		mtx.translate(0.5d, 0.5d, 0.5d);

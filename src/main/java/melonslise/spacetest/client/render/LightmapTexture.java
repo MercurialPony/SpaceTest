@@ -2,20 +2,21 @@ package melonslise.spacetest.client.render;
 
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.world.dimension.DimensionType;
 
 // this is essentially LightmapTextureManager copy-pasted and modified to work with any world
+@Environment(EnvType.CLIENT)
 public class LightmapTexture implements AutoCloseable
 {
 	public ClientWorld world;

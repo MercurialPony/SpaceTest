@@ -14,5 +14,14 @@ public class SpaceTestClient implements ClientModInitializer
 	{
 		StBlockEntityRenderers.register();
 		StShaders.register();
+
+		/*
+		WorldRenderEvents.START.register(ctx ->
+		{
+			MinecraftClient client = MinecraftClient.getInstance();
+			double fov = Math.max(client.gameRenderer.getFov(ctx.camera(), ctx.tickDelta(), true), client.options.getFov().getValue().doubleValue());
+			planetCuller.update(ctx.matrixStack().peek().getPositionMatrix(), client.gameRenderer.getBasicProjectionMatrix(fov));
+		});
+		 */
 	}
 }
