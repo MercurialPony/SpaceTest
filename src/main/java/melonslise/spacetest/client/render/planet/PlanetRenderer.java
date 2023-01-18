@@ -27,7 +27,6 @@ import qouteall.imm_ptl.core.ClientWorldLoader;
 // FIXME: Bugs:
 // placement doesn't get updated
 // safe close all resources/threads/etc.
-// wrong scale
 
 /**
  * This is the central planet renderer class
