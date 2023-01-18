@@ -25,9 +25,7 @@ import net.minecraft.world.World;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 
 // FIXME: Bugs:
-// having to replace the block if not everything is loaded
 // placement doesn't get updated
-// experiment with parallel force initial compilation
 // safe close all resources/threads/etc.
 // wrong scale
 
@@ -59,8 +57,7 @@ public class PlanetRenderer
 
 		this.lightmap = new LightmapTexture(world);
 
-		this.faceRenderers = new CubeData<>(planetProps.getOrigin(), planetProps.getFaceSize(), (face, cornerChunkPos) -> new PlanetFaceRenderer(wr.getChunkBuilder(), planetProps, face, cornerChunkPos, world.countVerticalSections()));
-		this.faceRenderers.forEach(PlanetFaceRenderer::rebuildAll);
+		this.faceRenderers = new CubeData<>(planetProps.getOrigin(), planetProps.getFaceSize(), (face, cornerChunkPos) -> new PlanetFaceRenderer(world, wr.getChunkBuilder(), planetProps, face, cornerChunkPos));
 	}
 
 
@@ -143,8 +140,7 @@ public class PlanetRenderer
 		mtx.pop();
 		*/
 
-		this.faceRenderers.forEach(PlanetFaceRenderer::discoverAndCullAsync);
-		//this.faceRenderers.forEach(PlanetFaceRenderer::rebuildCache);
+		this.faceRenderers.forEach(PlanetFaceRenderer::processChunksAsync);
 
 		mtx.push();
 

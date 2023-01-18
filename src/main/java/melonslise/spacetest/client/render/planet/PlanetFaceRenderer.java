@@ -13,7 +13,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.VertexBuffer;
-import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.chunk.ChunkBuilder;
@@ -21,26 +20,25 @@ import net.minecraft.client.render.chunk.ChunkRendererRegionBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.*;
+import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 /**
  * This is the core of planet rendering which is responsible for rendering a single face of a planet
  *
- * It is majorly based on the vanilla WorldRenderer and the general process is very similar with some tweaks and improvements
- * 1. First it grabs the entire area of the planet and compiles EVERY chunk once
- * 2. After that is done, it continuously finds all the chunks visible from the top of the planet...
- *    ... and subsequently culls them via a very naive approach:
- *    the planet is split in half based on the direction to the camera, and every chunk in the back half is culled
- *    (the code for frustum culling is also there but currently unused, I'm looking for better approaches)
- * 3. TODO: all the remaining chunks are then rebuilt if they have been updated (e.g. block placed)
- * 4. The lightmap of the target dimension is applied and the chunks are rendered with a special shader
+ * It is majorly based on the vanilla WorldRenderer and the general process is very similar (albeit with major refactors)
+ * Chunks that are visible from the top of the planet are continuously discovered, rebuilt and culled, then sent to render with the lightmap of the target dimension and a special (planet) shader applied
+ * More details below
  */
 @Environment(EnvType.CLIENT)
 public class PlanetFaceRenderer
 {
+	public final World world;
 	public final ChunkBuilder chunkBuilder;
 
 	public final PlanetProperties planetProps;
@@ -49,113 +47,188 @@ public class PlanetFaceRenderer
 	public final ChunkSectionPos cornerChunkPos;
 	public final int faceHeight;
 
-	public PlanetFaceStorage chunkStorage;
+	public final PlanetFaceStorage chunkStorage;
 	public Collection<ChunkBuilder.BuiltChunk> chunkCache;
-	public CompletableFuture<Collection<ChunkBuilder.BuiltChunk>> collectFuture;
+	public CompletableFuture<Collection<ChunkBuilder.BuiltChunk>> processTask;
 
-	public PlanetFaceRenderer(ChunkBuilder chunkBuilder, PlanetProperties planetProps, CubemapFace face, ChunkSectionPos cornerChunkPos, int faceHeight)
+	public PlanetFaceRenderer(World world, ChunkBuilder chunkBuilder, PlanetProperties planetProps, CubemapFace face, ChunkSectionPos cornerChunkPos)
 	{
+		this.world = world;
 		this.chunkBuilder = chunkBuilder;
 
 		this.planetProps = planetProps;
 
 		this.face = face;
 		this.cornerChunkPos = cornerChunkPos;
-		this.faceHeight = faceHeight;
+		this.faceHeight = world.countVerticalSections();
 
-		this.chunkStorage = new PlanetFaceStorage(chunkBuilder, cornerChunkPos, planetProps.getFaceSize(), faceHeight);
+		this.chunkStorage = new PlanetFaceStorage(chunkBuilder, cornerChunkPos, planetProps.getFaceSize(), this.faceHeight);
 	}
 
-	// FIXME remove force
-	public static void rebuild(ChunkBuilder chunkBuilder, Stream<ChunkBuilder.BuiltChunk> stream, boolean force)
+	public ChunkBuilder.BuiltChunk getNeighborChunk(int x, int y, int z, Direction direction)
 	{
-		ChunkRendererRegionBuilder regionBuilder = new ChunkRendererRegionBuilder();
+		return this.chunkStorage.get(x + direction.getOffsetX(), y + direction.getOffsetY(), z + direction.getOffsetZ());
+	}
 
-		stream.forEach(chunk ->
+	public boolean isSideVisibleThroughChunk(ChunkBuilder.BuiltChunk chunk, Direction visitedFromDirection, Direction targetDirection)
+	{
+		return visitedFromDirection == null || chunk.getData().isVisibleThrough(visitedFromDirection.getOpposite(), targetDirection);
+	}
+
+	// TODO: what is the difference between shouldRenderOnUpdate and checking world.isChunkLoaded (considering the immptl mixin)
+	public void rebuildChunk(ChunkRendererRegionBuilder builder, ChunkBuilder.BuiltChunk chunk, int x, int z)
+	{
+		if(chunk.needsRebuild() && this.world.getChunk(x, z).shouldRenderOnUpdate())
 		{
-			if(force)
-			{
-				chunkBuilder.rebuild(chunk, regionBuilder);
-			}
-			else
-			{
-				chunk.scheduleRebuild(chunkBuilder, regionBuilder);
-			}
-
+			chunk.scheduleRebuild(this.chunkBuilder, builder);
 			chunk.cancelRebuild();
-		});
-
-		if(force)
-		{
-			chunkBuilder.upload();
 		}
 	}
 
-	public void rebuildAll()
+	// FIXME is this worth?
+	public boolean cullChunk(ChunkBuilder.BuiltChunk chunk, Vec3f planeNormal, Vec3f delta)
 	{
-		rebuild(this.chunkBuilder, Arrays.stream(this.chunkStorage.chunks), false);
+		if(chunk.getData().isEmpty())
+		{
+			return true;
+		}
+
+		Vec3d planeCenter = this.planetProps.getPosition();
+		Box bounds = chunk.getBoundingBox();
+
+		for(int i = 0; i < 8; ++i)
+		{
+			// Generate cube vertices
+			//https://stackoverflow.com/a/65306627/11734319
+			delta.set(
+					(float) (GeneralUtil.checkBit(i, 0) ? bounds.minX : bounds.maxX),
+					(float) (GeneralUtil.checkBit(i, 0) ? bounds.minY : bounds.maxY),
+					(float) (GeneralUtil.checkBit(i, 0) ? bounds.minZ : bounds.maxZ));
+			// to face local coords
+			delta.add(-this.cornerChunkPos.getMinX(), -this.cornerChunkPos.getMinY(), -this.cornerChunkPos.getMinZ());
+
+			PlanetProjection.faceToSpace(this.planetProps, this.face, delta);
+
+			delta.add((float) -planeCenter.x, (float) -planeCenter.y, (float) -planeCenter.z);
+
+			// https://math.stackexchange.com/questions/1330210/how-to-check-if-a-point-is-in-the-direction-of-the-normal-of-a-plane
+			if(delta.dot(planeNormal) > 0.0f)
+			{
+				return false;
+			}
+
+				/*
+				delta.add((float) (planeCenter.x - frustum.x), (float) (planeCenter.y - frustum.y), (float) (planeCenter.z - frustum.z));
+
+				boolean inFrustum = true;
+
+				for(Vector4f frustumNormal : frustum.homogeneousCoordinates)
+				{
+					if(delta.getX() * frustumNormal.getX() + delta.getY() * frustumNormal.getY() + delta.getZ() * frustumNormal.getZ() < 0.0f)
+					{
+						inFrustum = false;
+						break;
+					}
+				}
+
+				if(inFrustum)
+				{
+					return true;
+				}
+
+				 */
+		}
+
+		return true;
 	}
 
-	public Collection<ChunkBuilder.BuiltChunk> discoverAndCull(Collection<ChunkBuilder.BuiltChunk> outChunks)
+	/**
+	 * This single method is essentially a mash of the vanilla WorldRenderer's enqueueChunksInViewDistance, collectRenderableChunks, applyFrustum and updateChunks all in one (for simplicity, performance and other reasons)
+	 *
+	 * The algorithm works as follows:
+	 * 1. Starting with the top corner chunk, we recursively check all neighbors if:
+	 *    The neighbor exists, hasn't been visited and can be seen through the parent chunk from the direction the parent chunk was visited previously
+	 * 2. All of these discovered chunks are then rebuilt only if needed, i.e. if the planet is being rendered for the first time and the chunk has just been created, or if a block update occurred
+	 *    Makes sure to also check if the chunk has been loaded first (that is what shouldRenderOnUpdate does I assume)
+	 * 3. After that we check if the chunk can be culled and add it to the output if not
+	 *    The current culling approach is very naive: the planet is split in half based on the direction to the camera, and every chunk in the back half is culled
+	 *    (the code for frustum culling is also there but currently unused, I'm looking for better approaches)
+	 *
+	 * Worth noting that on the first couple of calls, not many chunks will be discovered, because they haven't been compiled yet and therefor their visibility graphs don't exist yet
+	 * But with every call, more and more chunks are compiled and thus discovered
+	 */
+	public Collection<ChunkBuilder.BuiltChunk> processChunks(Collection<ChunkBuilder.BuiltChunk> outChunks)
 	{
-		Queue<ChunkNode> chunkQueue = new ArrayDeque<>();
-		boolean[] visited = new boolean[this.chunkStorage.chunks.length];
-
+		// setup for culling
 		Vec3f container = new Vec3f(this.planetProps.getPosition());
 		Vec3f normal = new Vec3f(MinecraftClient.getInstance().gameRenderer.getCamera().getPos());
 		normal.subtract(container);
 
-		// this is essentially what WorldRenderer#enqueueChunksInViewDistance does, except instead of the camera chunk we choose an arbitrary one
-		// ...that being the top corner chunk
-		chunkQueue.add(new ChunkNode(this.chunkStorage.get(this.cornerChunkPos.getX(), this.cornerChunkPos.getY() + this.faceHeight - 1, this.cornerChunkPos.getZ()), null));
+		// setup for rebuilding
+		ChunkRendererRegionBuilder regionBuilder = new ChunkRendererRegionBuilder();
+
+		// setup for discovery
+		Queue<ChunkBuilder.BuiltChunk> chunkQueue = new ArrayDeque<>();
+		Direction[] visited = new Direction[this.chunkStorage.chunks.length];
+
+		// FIXME: add all top level chunks in case this one is obstructed?
+		chunkQueue.add(this.chunkStorage.get(this.cornerChunkPos.getX(), this.cornerChunkPos.getY() + this.faceHeight - 1, this.cornerChunkPos.getZ()));
 
 		while (!chunkQueue.isEmpty())
 		{
-			ChunkNode currentNode = chunkQueue.poll();
+			ChunkBuilder.BuiltChunk currentChunk = chunkQueue.poll();
 
-			if(!currentNode.cull(MinecraftClient.getInstance().worldRenderer.frustum, normal, container))
+			BlockPos currentOrigin = currentChunk.getOrigin();
+			int cx = ChunkSectionPos.getSectionCoord(currentOrigin.getX());
+			int cy = ChunkSectionPos.getSectionCoord(currentOrigin.getY());
+			int cz = ChunkSectionPos.getSectionCoord(currentOrigin.getZ());
+
+			// TODO: only rebuild chunks that can be seen (i.e. not culled)?
+			// TODO: experiment with parallel force compilation
+			this.rebuildChunk(regionBuilder, currentChunk, cx, cz);
+
+			if(!this.cullChunk(currentChunk, normal, container))
 			{
-				outChunks.add(currentNode.chunk);
+				outChunks.add(currentChunk);
 			}
 
-			// get all neighbors of this chunk
 			for (Direction direction : Direction.values())
 			{
-				ChunkBuilder.BuiltChunk adjacentChunk = currentNode.getNeighbor(direction);
+				ChunkBuilder.BuiltChunk adjacentChunk =  this.getNeighborChunk(cx, cy, cz, direction);
 
-				// if we visited this neighbor already then skip it
-				// check if the neighboring chunk can be seen through at least one face of the current one. If it can't then skip it
-				if(adjacentChunk == null || visited[adjacentChunk.index] || !currentNode.isVisibleThrough(direction))
+				// if the neighbor doesn't exist or has been visited already, skip it
+				// also check if it can be seen through the current one via the face to which the current one was visited. If not, skip it
+				if(adjacentChunk == null || visited[adjacentChunk.index] != null || !this.isSideVisibleThroughChunk(currentChunk, visited[currentChunk.index], direction))
 				{
 					continue;
 				}
 
-				// if the neighbor is visible AND hasn't been saved yet then mark it as visited, create an info for it and add it to the chunkQueue
-				visited[adjacentChunk.index] = true;
-				chunkQueue.add(new ChunkNode(adjacentChunk, direction));
+				// save the direction from which we came to this chunk for later
+				visited[adjacentChunk.index] = direction;
+				chunkQueue.add(adjacentChunk);
 			}
 		}
 
 		return outChunks;
 	}
 
-	public void discoverAndCullAsync()
+	public void processChunksAsync()
 	{
-		if(this.collectFuture != null && !this.collectFuture.isDone())
+		if(this.processTask != null && !this.processTask.isDone())
 		{
 			return;
 		}
 
 		// TODO init queue and list with initial size (does that improve performance)?
-
-		this.collectFuture = CompletableFuture.supplyAsync(() -> this.discoverAndCull(new ArrayList<>()), Util.getMainWorkerExecutor())
+		this.processTask = CompletableFuture.supplyAsync(() -> this.processChunks(new ArrayList<>()), Util.getMainWorkerExecutor())
 			.exceptionally(e ->
 			{
 				e.printStackTrace();
 				return null;
 			});
 
-		this.collectFuture.thenAccept(chunks -> this.chunkCache = chunks); // TODO: can this cause concurrency issues?
+		// TODO: can this cause concurrency issues?
+		this.processTask.thenAccept(chunks -> this.chunkCache = chunks);
 	}
 
 	public void render(MatrixStack mtx, Vec3d cameraPos, LightmapTexture lightmap)
@@ -268,97 +341,5 @@ public class PlanetFaceRenderer
 		shader.unbind();
 		VertexBuffer.unbind();
 		newLayer.endDrawing();
-	}
-
-
-
-
-
-	private class ChunkNode
-	{
-		public final ChunkBuilder.BuiltChunk chunk;
-
-		public final Direction visitedFromDirection;
-
-		public ChunkNode(ChunkBuilder.BuiltChunk chunk, Direction direction)
-		{
-			this.chunk = chunk;
-			this.visitedFromDirection = direction;
-		}
-
-		public ChunkBuilder.BuiltChunk getNeighbor(Direction direction)
-		{
-			BlockPos pos = this.chunk.getOrigin();
-
-			return PlanetFaceRenderer.this.chunkStorage.get(
-				ChunkSectionPos.getSectionCoord(pos.getX()) + direction.getOffsetX(),
-				ChunkSectionPos.getSectionCoord(pos.getY()) + direction.getOffsetY(),
-				ChunkSectionPos.getSectionCoord(pos.getZ()) + direction.getOffsetZ());
-		}
-
-		public boolean isVisibleThrough(Direction direction)
-		{
-			return this.visitedFromDirection == null || this.chunk.getData().isVisibleThrough(this.visitedFromDirection.getOpposite(), direction);
-		}
-
-		// FIXME is this worth?
-		// also move method to parent class?
-		public boolean cull(Frustum frustum, Vec3f planeNormal, Vec3f delta)
-		{
-			if(this.chunk.getData().isEmpty())
-			{
-				return true;
-			}
-
-			PlanetFaceRenderer renderer = PlanetFaceRenderer.this;
-
-			Vec3d planeCenter = renderer.planetProps.getPosition();
-			Box bounds = this.chunk.getBoundingBox();
-
-			for(int i = 0; i < 8; ++i)
-			{
-				// Generate cube vertices
-				//https://stackoverflow.com/a/65306627/11734319
-				delta.set(
-					(float) (GeneralUtil.checkBit(i, 0) ? bounds.minX : bounds.maxX),
-					(float) (GeneralUtil.checkBit(i, 0) ? bounds.minY : bounds.maxY),
-					(float) (GeneralUtil.checkBit(i, 0) ? bounds.minZ : bounds.maxZ));
-				// to face local coords
-				delta.add(-renderer.cornerChunkPos.getMinX(), -renderer.cornerChunkPos.getMinY(), -renderer.cornerChunkPos.getMinZ());
-
-				PlanetProjection.faceToSpace(renderer.planetProps, renderer.face, delta);
-
-				delta.add((float) -planeCenter.x, (float) -planeCenter.y, (float) -planeCenter.z);
-
-				// https://math.stackexchange.com/questions/1330210/how-to-check-if-a-point-is-in-the-direction-of-the-normal-of-a-plane
-				if(delta.dot(planeNormal) > 0.0f)
-				{
-					return false;
-				}
-
-				/*
-				delta.add((float) (planeCenter.x - frustum.x), (float) (planeCenter.y - frustum.y), (float) (planeCenter.z - frustum.z));
-
-				boolean inFrustum = true;
-
-				for(Vector4f frustumNormal : frustum.homogeneousCoordinates)
-				{
-					if(delta.getX() * frustumNormal.getX() + delta.getY() * frustumNormal.getY() + delta.getZ() * frustumNormal.getZ() < 0.0f)
-					{
-						inFrustum = false;
-						break;
-					}
-				}
-
-				if(inFrustum)
-				{
-					return true;
-				}
-
-				 */
-			}
-
-			return true;
-		}
 	}
 }
