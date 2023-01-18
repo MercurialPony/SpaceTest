@@ -1,10 +1,9 @@
-package melonslise.spacetest.client.init;
+package melonslise.spacetest.init;
 
-import melonslise.spacetest.client.render.blockentity.PlanetBlockEntityRenderer;
-import melonslise.spacetest.init.StBlockEntities;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
+import melonslise.spacetest.render.blockentity.PlanetBlockEntityRenderer;
 
 @Environment(EnvType.CLIENT)
 public final class StBlockEntityRenderers

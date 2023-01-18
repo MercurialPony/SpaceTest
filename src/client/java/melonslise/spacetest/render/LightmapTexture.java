@@ -1,4 +1,4 @@
-package melonslise.spacetest.client.render;
+package melonslise.spacetest.render;
 
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -13,7 +13,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 
 // this is essentially LightmapTextureManager copy-pasted and modified to work with any world
 @Environment(EnvType.CLIENT)
@@ -69,28 +69,29 @@ public class LightmapTexture implements AutoCloseable
 		this.flickerIntensity *= 0.9f;
 	}
 
+	// FIXME this has an insane amount of object creation!!!
 	public void update(float delta)
 	{
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		float f = this.world.getStarBrightness(1f);
+		float starBrightness = this.world.getStarBrightness(1f);
 
 		float darknessScale = client.options.getDarknessEffectScale().getValue().floatValue();
-		float i = getDarknessFactor(delta) * darknessScale;
-		float j = getDarkness(client.player, i, delta) * darknessScale;
+		float darknessFactor = getDarknessFactor(delta) * darknessScale;
+		float darkness = getDarkness(client.player, darknessFactor, delta) * darknessScale;
 
-		float l = 0f;
+		float nightVisionStrength = 0.0f;
 
 		if (client.player.hasStatusEffect(StatusEffects.NIGHT_VISION))
 		{
-			l = GameRenderer.getNightVisionStrength(client.player, delta);
+			nightVisionStrength = GameRenderer.getNightVisionStrength(client.player, delta);
 		}
 		else if (client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER))
 		{
-			l = client.player.getUnderwaterVisibility();
+			nightVisionStrength = client.player.getUnderwaterVisibility();
 		}
 
-		Vec3f light = new Vec3f();
+		Vector3f light = new Vector3f();
 
 		for (int y = 0; y < 16; ++y)
 		{
@@ -98,7 +99,7 @@ public class LightmapTexture implements AutoCloseable
 			{
 				float ambientLight = this.world.getDimension().ambientLight();
 
-				float p = getBrightness(ambientLight, y) * (this.world.getLightningTicksLeft() > 0 ? 1f : f * 0.95f + 0.05f);
+				float p = getBrightness(ambientLight, y) * (this.world.getLightningTicksLeft() > 0 ? 1.0f : starBrightness * 0.95f + 0.05f);
 				float q = getBrightness(ambientLight, x) * (this.flickerIntensity + 1.5f);
 
 				float s = q * ((q * 0.6f + 0.4f) * 0.6f + 0.4f);
@@ -107,68 +108,61 @@ public class LightmapTexture implements AutoCloseable
 
 				if (this.world.getDimensionEffects().shouldBrightenLighting())
 				{
-					light.lerp(new Vec3f(0.99f, 1.12f, 1f), 0.25f);
-					light.clamp(0f, 1f);
+					clamp(light.lerp(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f));
 				}
 				else
 				{
-					Vec3f v = new Vec3f(f, f, 1f);
-					v.lerp(new Vec3f(1f, 1f, 1f), 0.35f);
-					v.scale(p);
-
-					light.add(v);
-					light.lerp(new Vec3f(0.75f, 0.75f, 0.75f), 0.04f);
+					light.add(new Vector3f(starBrightness, starBrightness, 1.0f).lerp(new Vector3f(1.0f, 1.0f, 1.0f), 0.35f).mul(p));
+					light.lerp(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
 
 					float skyDarkness = client.gameRenderer.getSkyDarkness(delta);
 
-					if (skyDarkness > 0f)
+					if (skyDarkness > 0.0f)
 					{
-						Vec3f v1 = light.copy();
-						v1.multiplyComponentwise(0.7f, 0.6f, 0.6f);
-						light.lerp(v1, skyDarkness);
+						light.lerp(new Vector3f(light).mul(0.7f, 0.6f, 0.6f), skyDarkness);
 					}
 				}
 
-				if (l > 0f)
+				if (nightVisionStrength > 0.0f)
 				{
-					float v = Math.max(light.getX(), Math.max(light.getY(), light.getZ()));
+					float v = Math.max(light.x, Math.max(light.y, light.z));
 
-					if (v < 1.0F)
+					if (v < 1.0f)
 					{
-						float u = 1.0F / v;
-						Vec3f vec3f4 = light.copy();
-						vec3f4.scale(u);
-						light.lerp(vec3f4, l);
+						light.lerp(new Vector3f(light).mul(1.0f / v), nightVisionStrength);
 					}
 				}
 
 				if (!this.world.getDimensionEffects().shouldBrightenLighting())
 				{
-					if (j > 0f)
+					if (darkness > 0f)
 					{
-						light.add(-j, -j, -j);
+						light.add(-darkness, -darkness, -darkness);
 					}
 
-					light.clamp(0f, 1f);
+					clamp(light);
 				}
 
 				float gamma = client.options.getGamma().getValue().floatValue();
-				Vec3f v = light.copy();
-				v.modify(LightmapTexture::easeOutQuart);
-				light.lerp(v, Math.max(0f, gamma - i));
-				light.lerp(new Vec3f(0.75f, 0.75f, 0.75f), 0.04f);
-				light.clamp(0f, 1f);
-				light.scale(255f);
+				light.lerp(new Vector3f(easeOutQuart(light.x), easeOutQuart(light.y), easeOutQuart(light.z)), Math.max(0f, gamma - darknessFactor));
+				light.lerp(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
+				clamp(light);
+				light.mul(255.0f);
 
-				int xx = (int) light.getX();
-				int yy = (int) light.getY();
-				int zz = (int) light.getZ();
+				int xx = (int) light.x;
+				int yy = (int) light.y;
+				int zz = (int) light.z;
 
 				this.texture.getImage().setColor(x, y, 0xFF000000 | zz << 16 | yy << 8 | xx);
 			}
 		}
 
 		this.texture.upload();
+	}
+
+	private static void clamp(Vector3f vec)
+	{
+		vec.set(MathHelper.clamp(vec.x, 0.0f, 1.0f), MathHelper.clamp(vec.y, 0.0f, 1.0f), MathHelper.clamp(vec.z, 0.0f, 1.0f));
 	}
 
 	public static float getDarknessFactor(float delta)

@@ -1,18 +1,18 @@
 package melonslise.spacetest.planet;
 
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3d;
+import org.joml.Quaternionf;
+import org.joml.Vector3d;
 
 public interface PlanetProperties
 {
-	Vec3d getLastPosition();
+	Vector3d getLastPosition();
 
-	Vec3d getPosition();
+	Vector3d getPosition();
 
-	Quaternion getLastRotation();
+	Quaternionf getLastRotation();
 
-	Quaternion getRotation();
+	Quaternionf getRotation();
 
 	ChunkSectionPos getOrigin();
 

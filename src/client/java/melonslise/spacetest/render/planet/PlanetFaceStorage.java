@@ -1,4 +1,4 @@
-package melonslise.spacetest.client.render.planet;
+package melonslise.spacetest.render.planet;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

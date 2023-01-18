@@ -6,7 +6,8 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public final class StBlockEntities
 {
@@ -16,7 +17,7 @@ public final class StBlockEntities
 
 	private static <T extends BlockEntity> BlockEntityType<T> register(String name, BlockEntityType.BlockEntityFactory<T> factory, Block... blocks)
 	{
-		return Registry.register(Registry.BLOCK_ENTITY_TYPE, SpaceTestCore.id(name), FabricBlockEntityTypeBuilder.create(factory::create, blocks).build());
+		return Registry.register(Registries.BLOCK_ENTITY_TYPE, SpaceTestCore.id(name), FabricBlockEntityTypeBuilder.create(factory::create, blocks).build());
 	}
 
 	public static void register()

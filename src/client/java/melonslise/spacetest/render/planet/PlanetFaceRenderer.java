@@ -1,9 +1,8 @@
-package melonslise.spacetest.client.render.planet;
+package melonslise.spacetest.render.planet;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.satin.api.managed.ManagedCoreShader;
-import melonslise.spacetest.client.init.StShaders;
-import melonslise.spacetest.client.render.LightmapTexture;
+import melonslise.spacetest.init.StShaders;
 import melonslise.spacetest.planet.CubemapFace;
 import melonslise.spacetest.planet.PlanetProjection;
 import melonslise.spacetest.planet.PlanetProperties;
@@ -12,15 +11,19 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlUniform;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.render.chunk.ChunkRendererRegionBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+import melonslise.spacetest.render.LightmapTexture;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -86,14 +89,14 @@ public class PlanetFaceRenderer
 	}
 
 	// FIXME is this worth?
-	public boolean cullChunk(ChunkBuilder.BuiltChunk chunk, Vec3f planeNormal, Vec3f delta)
+	public boolean cullChunk(ChunkBuilder.BuiltChunk chunk, Vector3f planeNormal, Vector3f delta)
 	{
 		if(chunk.getData().isEmpty())
 		{
 			return true;
 		}
 
-		Vec3d planeCenter = this.planetProps.getPosition();
+		Vector3d planeCenter = this.planetProps.getPosition();
 		Box bounds = chunk.getBoundingBox();
 
 		for(int i = 0; i < 8; ++i)
@@ -101,15 +104,15 @@ public class PlanetFaceRenderer
 			// Generate cube vertices
 			//https://stackoverflow.com/a/65306627/11734319
 			delta.set(
-					(float) (GeneralUtil.checkBit(i, 0) ? bounds.minX : bounds.maxX),
-					(float) (GeneralUtil.checkBit(i, 0) ? bounds.minY : bounds.maxY),
-					(float) (GeneralUtil.checkBit(i, 0) ? bounds.minZ : bounds.maxZ));
+				GeneralUtil.checkBit(i, 0) ? bounds.minX : bounds.maxX,
+				GeneralUtil.checkBit(i, 0) ? bounds.minY : bounds.maxY,
+				GeneralUtil.checkBit(i, 0) ? bounds.minZ : bounds.maxZ);
 			// to face local coords
-			delta.add(-this.cornerChunkPos.getMinX(), -this.cornerChunkPos.getMinY(), -this.cornerChunkPos.getMinZ());
+			delta.sub(this.cornerChunkPos.getMinX(), this.cornerChunkPos.getMinY(), this.cornerChunkPos.getMinZ());
 
 			PlanetProjection.faceToSpace(this.planetProps, this.face, delta);
 
-			delta.add((float) -planeCenter.x, (float) -planeCenter.y, (float) -planeCenter.z);
+			delta.sub((float) planeCenter.x, (float) planeCenter.y, (float) planeCenter.z);
 
 			// https://math.stackexchange.com/questions/1330210/how-to-check-if-a-point-is-in-the-direction-of-the-normal-of-a-plane
 			if(delta.dot(planeNormal) > 0.0f)
@@ -160,9 +163,10 @@ public class PlanetFaceRenderer
 	public Collection<ChunkBuilder.BuiltChunk> processChunks(Collection<ChunkBuilder.BuiltChunk> outChunks)
 	{
 		// setup for culling
-		Vec3f container = new Vec3f(this.planetProps.getPosition());
-		Vec3f normal = new Vec3f(MinecraftClient.getInstance().gameRenderer.getCamera().getPos());
-		normal.subtract(container);
+		Vector3f container = new Vector3f();
+		container.set(this.planetProps.getPosition());
+		Vector3f normal = MinecraftClient.getInstance().gameRenderer.getCamera().getPos().toVector3f();
+		normal.sub(container);
 
 		// setup for rebuilding
 		ChunkRendererRegionBuilder regionBuilder = new ChunkRendererRegionBuilder();
@@ -256,7 +260,7 @@ public class PlanetFaceRenderer
 		newLayer.startDrawing();
 		lightmap.enable();
 
-		Shader shader = RenderSystem.getShader();
+		ShaderProgram shader = RenderSystem.getShader();
 
 		for(int j = 0; j < 12; ++j)
 		{
@@ -330,12 +334,12 @@ public class PlanetFaceRenderer
 			}
 
 			buf.bind();
-			buf.drawElements();
+			buf.draw();
 		}
 
 		if (chunkOffset != null)
 		{
-			chunkOffset.set(Vec3f.ZERO);
+			chunkOffset.set(0.0f, 0.0f, 0.0f);
 		}
 
 		shader.unbind();

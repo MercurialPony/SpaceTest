@@ -2,22 +2,22 @@ package melonslise.spacetest.planet;
 
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3d;
+import org.joml.Quaternionf;
+import org.joml.Vector3d;
 
 public class BasicPlanetProperties implements PlanetProperties
 {
-	private final Vec3d lastPosition;
-	private final Vec3d position;
-	private final Quaternion lastRotation = Quaternion.IDENTITY.copy();
-	private final Quaternion rotation = Quaternion.IDENTITY.copy();
+	private final Vector3d lastPosition;
+	private final Vector3d position;
+	private final Quaternionf lastRotation = new Quaternionf();
+	private final Quaternionf rotation = new Quaternionf();
 	private final ChunkSectionPos origin;
 	private final int faceSize;
 	private final float startRadius;
 	private final float radiusRatio;
 
 	// SeaLevel must be relative to the bottom Y!!!
-	public BasicPlanetProperties(Vec3d pos, ChunkSectionPos origin, int faceSize, int seaLevel)
+	public BasicPlanetProperties(Vector3d pos, ChunkSectionPos origin, int faceSize, int seaLevel)
 	{
 		this.lastPosition = pos;
 		this.position = pos;
@@ -28,25 +28,25 @@ public class BasicPlanetProperties implements PlanetProperties
 	}
 
 	@Override
-	public Vec3d getLastPosition()
+	public Vector3d getLastPosition()
 	{
 		return this.lastPosition;
 	}
 
 	@Override
-	public Vec3d getPosition()
+	public Vector3d getPosition()
 	{
 		return this.position;
 	}
 
 	@Override
-	public Quaternion getLastRotation()
+	public Quaternionf getLastRotation()
 	{
 		return this.lastRotation;
 	}
 
 	@Override
-	public Quaternion getRotation()
+	public Quaternionf getRotation()
 	{
 		return this.rotation;
 	}

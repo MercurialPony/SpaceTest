@@ -37,7 +37,7 @@ public class PlanetBlock<T extends PlanetBlockEntity> extends Block implements B
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) // FIXME this is for testing only
+	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack)
 	{
 		((PlanetBlockEntity) world.getBlockEntity(pos)).placed(pos, placer);
 

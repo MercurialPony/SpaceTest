@@ -1,7 +1,7 @@
-package melonslise.spacetest.client;
+package melonslise.spacetest;
 
-import melonslise.spacetest.client.init.StBlockEntityRenderers;
-import melonslise.spacetest.client.init.StShaders;
+import melonslise.spacetest.init.StBlockEntityRenderers;
+import melonslise.spacetest.init.StShaders;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

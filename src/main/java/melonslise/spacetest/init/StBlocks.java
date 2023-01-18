@@ -2,12 +2,13 @@ package melonslise.spacetest.init;
 
 import melonslise.spacetest.SpaceTestCore;
 import melonslise.spacetest.block.PlanetBlock;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.item.BlockItem;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public final class StBlocks
 {
@@ -17,8 +18,8 @@ public final class StBlocks
 
 	private static Block register(String name, Block block)
 	{
-		Registry.register(Registry.ITEM, SpaceTestCore.id(name), new BlockItem(block, new FabricItemSettings().group(StItems.MAIN_ITEM_TAB)));
-		return Registry.register(Registry.BLOCK, SpaceTestCore.id(name), block);
+		Registry.register(Registries.ITEM, SpaceTestCore.id(name), new BlockItem(block, new Item.Settings()));
+		return Registry.register(Registries.BLOCK, SpaceTestCore.id(name), block);
 	}
 
 	public static void register()

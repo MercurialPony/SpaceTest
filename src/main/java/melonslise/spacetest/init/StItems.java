@@ -1,18 +1,13 @@
 package melonslise.spacetest.init;
 
 import melonslise.spacetest.SpaceTestCore;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public final class StItems
 {
 	private StItems() {}
-
-	public static final ItemGroup MAIN_ITEM_TAB = FabricItemGroupBuilder.build(SpaceTestCore.id("main"), () -> new ItemStack(Items.APPLE));
 
 	/*
 	public static final Item TEST_ITEM = register("test_item", new Item(new Item.Settings().group(MAIN_ITEM_TAB))
@@ -41,7 +36,7 @@ public final class StItems
 
 	private static Item register(String name, Item item)
 	{
-		return Registry.register(Registry.ITEM, SpaceTestCore.id(name), item);
+		return Registry.register(Registries.ITEM, SpaceTestCore.id(name), item);
 	}
 
 	public static void register()

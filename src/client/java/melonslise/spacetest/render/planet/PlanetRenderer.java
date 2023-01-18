@@ -1,32 +1,28 @@
-package melonslise.spacetest.client.render.planet;
+package melonslise.spacetest.render.planet;
 
 import ladysnake.satin.api.managed.ManagedCoreShader;
-import melonslise.spacetest.client.init.StShaders;
-import melonslise.spacetest.client.render.LightmapTexture;
+import melonslise.spacetest.init.StShaders;
 import melonslise.spacetest.planet.CubeData;
-import melonslise.spacetest.planet.CubemapFace;
-import melonslise.spacetest.planet.PlanetProjection;
 import melonslise.spacetest.planet.PlanetProperties;
-import melonslise.spacetest.util.QuatMath;
+import melonslise.spacetest.render.LightmapTexture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.Quaternion;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
+import org.joml.Quaternionf;
 import qouteall.imm_ptl.core.ClientWorldLoader;
 
-// FIXME: Bugs:
+// FIXME: Bugs/improvements:
 // placement doesn't get updated
 // safe close all resources/threads/etc.
+// refresh on resoruce reload/etc?
+// add transparency sorting from WorldRenderer.renderLayer
 
 /**
  * This is the central planet renderer class
@@ -63,6 +59,8 @@ public class PlanetRenderer
 	/*
 	============= DEBUG METHODS - DELETE =============
 	 */
+
+	/*
 	public static void line(MatrixStack mtx, VertexConsumer vc, Vec3f pos1, Vec3f pos2)
 	{
 		vc.vertex(mtx.peek().getPositionMatrix(), pos1.getX(), pos1.getY(), pos1.getZ()).color(1f,0f,0f,1f).normal(mtx.peek().getNormalMatrix(), 1f, 0f, 0f).next();
@@ -75,8 +73,9 @@ public class PlanetRenderer
 		PlanetProjection.faceToSpace(this.planetProps, face, pos);
 		return pos;
 	}
+	 */
 
-		/*
+	/*
 	============= --------------------- =============
 	 */
 
@@ -143,10 +142,7 @@ public class PlanetRenderer
 
 		mtx.push();
 
-		Quaternion q = Quaternion.IDENTITY.copy();
-		QuatMath.nlerp(q, this.planetProps.getLastRotation(), this.planetProps.getRotation(), frameDelta);
-
-		mtx.multiply(q);
+		mtx.multiply(this.planetProps.getLastRotation().nlerp(this.planetProps.getRotation(), frameDelta, new Quaternionf())); // FIXME ughh object creationnn
 
 		mtx.translate(camPos.x, camPos.y, camPos.z);
 

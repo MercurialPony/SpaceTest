@@ -1,9 +1,6 @@
 package melonslise.spacetest;
 
-import melonslise.spacetest.init.SpaceDimension;
-import melonslise.spacetest.init.StBlockEntities;
-import melonslise.spacetest.init.StBlocks;
-import melonslise.spacetest.init.StItems;
+import melonslise.spacetest.init.*;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 
@@ -29,7 +26,9 @@ public class SpaceTestCore implements ModInitializer
 	{
 		StBlocks.register();
 		StItems.register();
+		StItemGroups.register();
 		StBlockEntities.register();
 		SpaceDimension.registerParts();
+
 	}
 }

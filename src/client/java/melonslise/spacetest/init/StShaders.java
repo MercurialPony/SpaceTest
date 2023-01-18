@@ -1,4 +1,4 @@
-package melonslise.spacetest.client.init;
+package melonslise.spacetest.init;
 
 import ladysnake.satin.api.managed.ManagedCoreShader;
 import ladysnake.satin.api.managed.ShaderEffectManager;

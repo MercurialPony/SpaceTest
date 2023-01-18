@@ -1,10 +1,16 @@
 package melonslise.spacetest.planet;
 
 import melonslise.spacetest.util.GeneralUtil;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.MathHelper;
+import org.joml.Quaternionf;
+import org.joml.Vector2f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 // FIXME use doubles
 // FIXME potentially use faster pow and log (approximate) algos / or cache
+// FIXME also replace sqrt and other functions with joml ones
 
 /**
  * Functions for converting between space-space (lol) and planet-space
@@ -35,22 +41,22 @@ public final class PlanetProjection
 	 * Face-space is another one of the many local coordinate systems involved in the remapping process
 	 * It is the coordinates relative to the corner of the face (e.g. if the face size is 16 blocks then X and Z will never exceed that)
 	 */
-	public static Vec3f faceToSpace(PlanetProperties planetProps, CubemapFace face, Vec3f pos)
+	public static Vector3f faceToSpace(PlanetProperties planetProps, CubemapFace face, Vector3f pos)
 	{
-		float height = pos.getY();
+		float height = pos.y;
 
 		// convert xz to uv [0, 1]
-		pos.scale(1.0f / planetProps.getFaceSize() / 16.0f);
+		pos.div(planetProps.getFaceSize() * 16.0f);
 		// convert uv to [-1, 1] cube
 		uvToCube(face, pos);
 		// convert cube to UNIT sphere
 		cubeToSphere(pos);
 		// give the sphere a calculated radius depending on the initial height of the point
-		pos.scale(heightToRadius(planetProps, height));
+		pos.mul(heightToRadius(planetProps, height));
 
 		// transform from planet-center-relative-space to world-space (since the above sphere is centered at 0, 0)
-		Vec3d planetPos = planetProps.getPosition();
-		pos.rotate(planetProps.getRotation());
+		pos.rotate(new Quaternionf(planetProps.getRotation())); // FIXME ughh object creationnnn
+		Vector3d planetPos = planetProps.getPosition();
 		pos.add((float) planetPos.x, (float) planetPos.y, (float) planetPos.z);
 
 		return pos;
@@ -60,19 +66,19 @@ public final class PlanetProjection
 	/**
 	 * Maps a point in planet-space to space-space given the planet properties
 	 *
-	 * Works as described above. Does the same thing as {@link #faceToSpace(PlanetProperties, CubemapFace, Vec3f)} but also determines which face the point is on right away
+	 * Works as described above. Does the same thing as {@link #faceToSpace(PlanetProperties, CubemapFace, Vector3f)} but also determines which face the point is on right away
 	 */
-	public static Vec3f planetToSpace(PlanetProperties planetProps, Vec3f pos)
+	public static Vector3f planetToSpace(PlanetProperties planetProps, Vector3f pos)
 	{
 		ChunkSectionPos origin = planetProps.getOrigin();
 		int faceSizeBlocks = planetProps.getFaceSize() * 16;
 
 		// transform the point to be relative to planet origin
-		pos.add(-origin.getMinX(), -origin.getMinY(), -origin.getMinZ());
+		pos.sub(origin.getMinX(), origin.getMinY(), origin.getMinZ());
 		// determine which face it is on
-		CubemapFace face = CubemapFace.from(MathHelper.floor(pos.getX() / faceSizeBlocks), MathHelper.floor(pos.getZ() / faceSizeBlocks));
+		CubemapFace face = CubemapFace.from(MathHelper.floor(pos.x / faceSizeBlocks), MathHelper.floor(pos.z / faceSizeBlocks));
 		// find the local face-space coordinates
-		pos.add(-face.planeOffsetX * faceSizeBlocks, 0.0f, -face.planeOffsetZ * faceSizeBlocks);
+		pos.sub(face.planeOffsetX * faceSizeBlocks, 0.0f, face.planeOffsetZ * faceSizeBlocks);
 
 		// do the rest
 		faceToSpace(planetProps, face, pos);
@@ -82,8 +88,6 @@ public final class PlanetProjection
 
 
 
-	// FIXME don't create new quat here
-	// FIXME use a better impl of Vec3f#rotate (default creates a ton of objects)
 	/**
 	 * Maps a point in space-space to planet-space relative to a planet (given its properties)
 	 *
@@ -92,19 +96,17 @@ public final class PlanetProjection
 	 * 2. Reverse the cube->cubemap mapping. Determine the face the point is on and correctly map it onto that face
 	 * 3. Transform the uv back into planet-world coordinates and reverse the previously saved radius to find the correct height
 	 */
-	public static Vec3f spaceToPlanet(PlanetProperties planetProps, Vec3f pos)
+	public static Vector3f spaceToPlanet(PlanetProperties planetProps, Vector3f pos)
 	{
 		// Move from absolute coords to planet-center-relative-space
 		// so that the sphere center is back to (0, 0) and normalization will properly scale it (among other things)
-		Vec3d planetPos = planetProps.getPosition();
-		pos.add((float) -planetPos.x, (float) -planetPos.y, (float) -planetPos.z);
-		Quaternion reverseRotation = planetProps.getRotation().copy();
-		reverseRotation.conjugate();
-		pos.rotate(reverseRotation);
+		Vector3d planetPos = planetProps.getPosition();
+		pos.sub((float) planetPos.x, (float) planetPos.y, (float) planetPos.z);
+		pos.rotate(new Quaternionf(planetProps.getRotation()).conjugate()); // FIXME ughh object creationnnn
 
 		// save the radius for later and downscale the sphere by normalizing the point
 		float radius = MathHelper.sqrt(pos.dot(pos));
-		pos.scale(1.0f / radius);
+		pos.div(radius);
 
 		// transform to [-1, 1] cube
 		sphereToCube(pos);
@@ -140,19 +142,19 @@ public final class PlanetProjection
 	 * Maps a point on the face of a cubemap to a [-1, 1] cube (ignores the y component of the uv vec)
 	 * @return point on the surface of a [-1, 1] cube
 	 */
-	private static Vec3f uvToCube(CubemapFace face, Vec3f uv) // mirrors the same function in the shader
+	private static Vector3f uvToCube(CubemapFace face, Vector3f uv) // mirrors the same function in the shader
 	{
-		uv.scale(2.0f);
+		uv.mul(2.0f);
 		uv.add(-1.0f, -1.0f, -1.0f);
 
 		switch (face)
 		{
-			case NORTH -> uv.set(uv.getX(), uv.getZ(), -1.0f);
-			case SOUTH -> uv.set(-uv.getX(), uv.getZ(), 1.0f);
-			case EAST -> uv.set(1.0f, uv.getZ(), uv.getX());
-			case WEST -> uv.set(-1.0f, uv.getZ(), -uv.getX());
-			case UP -> uv.set(uv.getX(), 1.0f, uv.getZ());
-			case DOWN -> uv.set(uv.getX(), -1.0f, -uv.getZ());
+			case NORTH -> uv.set(uv.x, uv.z, -1.0f);
+			case SOUTH -> uv.set(-uv.x, uv.z, 1.0f);
+			case EAST -> uv.set(1.0f, uv.z, uv.x);
+			case WEST -> uv.set(-1.0f, uv.z, -uv.x);
+			case UP -> uv.set(uv.x, 1.0f, uv.z);
+			case DOWN -> uv.set(uv.x, -1.0f, -uv.z);
 		}
 
 		return uv;
@@ -164,16 +166,16 @@ public final class PlanetProjection
 	 * Maps a point on a [-1, 1] cube to a unit sphere
 	 * @return point on the surface of a unit sphere
 	 */
-	private static Vec3f cubeToSphere(Vec3f pos)
+	private static Vector3f cubeToSphere(Vector3f pos)
 	{
-		float x2 = pos.getX() * pos.getX();
-		float y2 = pos.getY() * pos.getY();
-		float z2 = pos.getZ() * pos.getZ();
+		float x2 = pos.x * pos.x;
+		float y2 = pos.y * pos.y;
+		float z2 = pos.z * pos.z;
 
-		pos.multiplyComponentwise(
-				MathHelper.sqrt(1.0f - (y2 + z2) / 2.0f + y2 * z2 / 3.0f),
-				MathHelper.sqrt(1.0f - (x2 + z2) / 2.0f + x2 * z2 / 3.0f),
-				MathHelper.sqrt(1.0f - (x2 + y2) / 2.0f + x2 * y2 / 3.0f)
+		pos.mul(
+			MathHelper.sqrt(1.0f - (y2 + z2) / 2.0f + y2 * z2 / 3.0f),
+			MathHelper.sqrt(1.0f - (x2 + z2) / 2.0f + x2 * z2 / 3.0f),
+			MathHelper.sqrt(1.0f - (x2 + y2) / 2.0f + x2 * y2 / 3.0f)
 		);
 
 		return pos;
@@ -198,13 +200,13 @@ public final class PlanetProjection
 	// Thank you
 	// https://stackoverflow.com/a/65081330/11734319
 	// Modified to work only with unit spheres
-	private static Vec2f aux(float s, float t)
+	private static Vector2f aux(float s, float t)
 	{
 		float R = 2.0f * (s * s - t * t);
 		float S = MathHelper.sqrt( Math.max(0f, (3.0f + R) * (3.0f + R) - 24.0f * s * s) );
 		float s_ = Math.signum(s) * (float) I_SQRT2 * MathHelper.sqrt(Math.max(0f, 3.0f + R - S));
 		float t_ = Math.signum(t) * (float) I_SQRT2 * MathHelper.sqrt(Math.max(0f, 3.0f - R - S));
-		return new Vec2f(s_, t_);
+		return new Vector2f(s_, t_);
 	}
 
 	/**
@@ -212,29 +214,29 @@ public final class PlanetProjection
 	 * Important: this expects a normalized point
 	 * @return point on the surface of a [-1, 1] cube
 	 */
-	private static Vec3f sphereToCube(Vec3f pos)
+	private static Vector3f sphereToCube(Vector3f pos)
 	{
-		float ax = Math.abs(pos.getX());
-		float ay = Math.abs(pos.getY());
-		float az = Math.abs(pos.getZ());
+		float ax = Math.abs(pos.x);
+		float ay = Math.abs(pos.y);
+		float az = Math.abs(pos.z);
 		float max = Math.max(Math.max(ax, ay), az);
 
 		if (max == ax)
 		{
-			Vec2f aux = aux(pos.getY(), pos.getZ());
-			pos.set(Math.signum(pos.getX()), aux.x, aux.y);
+			Vector2f aux = aux(pos.y, pos.y);
+			pos.set(Math.signum(pos.x), aux.x, aux.y);
 			return pos;
 		}
 
 		if (max == ay)
 		{
-			Vec2f aux = aux(pos.getZ(), pos.getX());
-			pos.set(aux.y, Math.signum(pos.getY()), aux.x);
+			Vector2f aux = aux(pos.z, pos.x);
+			pos.set(aux.y, Math.signum(pos.y), aux.x);
 			return pos;
 		}
 
-		Vec2f aux = aux(pos.getX(), pos.getY());
-		pos.set(aux.x, aux.y, Math.signum(pos.getZ()));
+		Vector2f aux = aux(pos.x, pos.x);
+		pos.set(aux.x, aux.y, Math.signum(pos.z));
 		return pos;
 	}
 
@@ -244,29 +246,29 @@ public final class PlanetProjection
 	 * Maps a point from a [-1, 1] cube to a cubemap
 	 * @return [0, 1] uv coordinates of the point on the face of a cubemap, and the index of that face as the last component
 	 */
-	private static Vec3f cubeToUv(Vec3f pos)
+	private static Vector3f cubeToUv(Vector3f pos)
 	{
-		float ax = Math.abs(pos.getX());
-		float ay = Math.abs(pos.getY());
-		float az = Math.abs(pos.getZ());
+		float ax = Math.abs(pos.x);
+		float ay = Math.abs(pos.y);
+		float az = Math.abs(pos.z);
 
 		if (az >= ax && az >= ay)
 		{
-			boolean positive = pos.getZ() > 0.0f;
-			pos.set(pos.getX() / az * (positive ? -1.0f : 1.0f), pos.getY() / az, positive ? 1.0f : 0.0f);
+			boolean positive = pos.z > 0.0f;
+			pos.set(pos.x / az * (positive ? -1.0f : 1.0f), pos.y / az, positive ? 1.0f : 0.0f);
 		}
 		else if (ax >= ay && ax >= az)
 		{
-			boolean positive = pos.getX() > 0.0f;
-			pos.set(pos.getZ() / ax * (positive ? 1.0f : -1.0f), pos.getY() / ax, positive ? 2.0f : 3.0f);
+			boolean positive = pos.x > 0.0f;
+			pos.set(pos.z / ax * (positive ? 1.0f : -1.0f), pos.y / ax, positive ? 2.0f : 3.0f);
 		}
 		else
 		{
-			boolean positive = pos.getY() > 0.0f;
-			pos.set(pos.getX() / ay, pos.getZ() / ay * (positive ? 1.0f : -1.0f), positive ? 4.0f : 5.0f);
+			boolean positive = pos.y > 0.0f;
+			pos.set(pos.x / ay, pos.z / ay * (positive ? 1.0f : -1.0f), positive ? 4.0f : 5.0f);
 		}
 
-		pos.multiplyComponentwise(0.5f, 0.5f, 1.0f);
+		pos.mul(0.5f, 0.5f, 1.0f);
 		pos.add(0.5f, 0.5f, 0.0f);
 
 		return pos;
@@ -278,13 +280,13 @@ public final class PlanetProjection
 	 * IMPORTANT: does not include height
 	 * @return absolute horizontal XZ planet coordinates (without height)
 	 */
-	private static Vec3f uvToPlane(ChunkSectionPos origin, int faceSize, Vec3f uvf)
+	private static Vector3f uvToPlane(ChunkSectionPos origin, int faceSize, Vector3f uvf)
 	{
-		CubemapFace face = CubemapFace.values()[(int) uvf.getZ()];
+		CubemapFace face = CubemapFace.values()[(int) uvf.z];
 
-		uvf.set(uvf.getX(), 0.0f, uvf.getY());
+		uvf.set(uvf.x, 0.0f, uvf.y);
 		uvf.add(face.planeOffsetX, 0.0f, face.planeOffsetZ);
-		uvf.multiplyComponentwise(faceSize * 16.0f, 0.0f, faceSize * 16.0f);
+		uvf.mul(faceSize * 16.0f, 0.0f, faceSize * 16.0f);
 		uvf.add(origin.getMinX(), origin.getMinY(), origin.getMinZ());
 
 		return uvf;

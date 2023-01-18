@@ -4,12 +4,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import melonslise.spacetest.SpaceTestCore;
 import net.minecraft.block.BlockState;
-import net.minecraft.structure.StructureSet;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -25,9 +23,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -36,17 +32,12 @@ public class VoidChunkGenerator extends ChunkGenerator
 	public static final Identifier ID = new Identifier(SpaceTestCore.ID, "void");
 
 	public static final Codec<VoidChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance
-			.group(
-					RegistryOps.createRegistryCodec(Registry.STRUCTURE_SET_KEY).forGetter(c -> c.structureSetRegistry),
-					RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(c -> c.biomeRegistry))
-			.apply(instance, instance.stable(VoidChunkGenerator::new)));
+		.group(RegistryOps.getEntryCodec(BiomeKeys.PLAINS))
+		.apply(instance, instance.stable(VoidChunkGenerator::new)));
 
-	private final Registry<Biome> biomeRegistry;
-
-	public VoidChunkGenerator(Registry<StructureSet> structureSetRegistry, Registry<Biome> biomeRegistry)
+	public VoidChunkGenerator(RegistryEntry.Reference<Biome> biomeEntry)
 	{
-		super(structureSetRegistry, Optional.of(RegistryEntryList.of(Collections.emptyList())), new FixedBiomeSource(biomeRegistry.getOrCreateEntry(BiomeKeys.PLAINS))); // FIXME: own biome
-		this.biomeRegistry = biomeRegistry;
+		super(new FixedBiomeSource(biomeEntry)); // FIXME: own biome
 	}
 
 	@Override
