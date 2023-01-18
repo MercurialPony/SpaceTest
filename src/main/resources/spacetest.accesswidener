@@ -1,10 +1,1 @@
 accessWidener v1 named
-
-accessible method net/minecraft/client/render/GameRenderer getFov (Lnet/minecraft/client/render/Camera;FZ)D
-
-accessible field net/minecraft/client/render/WorldRenderer frustum Lnet/minecraft/client/render/Frustum;
-
-accessible field net/minecraft/client/render/Frustum homogeneousCoordinates [Lnet/minecraft/util/math/Vector4f;
-accessible field net/minecraft/client/render/Frustum x D
-accessible field net/minecraft/client/render/Frustum y D
-accessible field net/minecraft/client/render/Frustum z D

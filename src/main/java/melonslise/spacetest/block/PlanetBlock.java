@@ -3,6 +3,7 @@ package melonslise.spacetest.block;
 import melonslise.spacetest.blockentity.PlanetBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -41,5 +42,12 @@ public class PlanetBlock<T extends PlanetBlockEntity> extends Block implements B
 		((PlanetBlockEntity) world.getBlockEntity(pos)).placed(pos, placer);
 
 		super.onPlaced(world, pos, state, placer, itemStack);
+	}
+
+	@Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type)
+	{
+		return PlanetBlockEntity::tick;
 	}
 }

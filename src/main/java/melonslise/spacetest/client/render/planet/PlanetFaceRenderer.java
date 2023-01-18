@@ -96,14 +96,6 @@ public class PlanetFaceRenderer
 		rebuild(this.chunkBuilder, Arrays.stream(this.chunkStorage.chunks), false);
 	}
 
-	public void rebuildCache()
-	{
-		if(this.chunkCache != null)
-		{
-			rebuild(this.chunkBuilder, this.chunkCache.stream().filter(ChunkBuilder.BuiltChunk::needsRebuild), false);
-		}
-	}
-
 	public Collection<ChunkBuilder.BuiltChunk> discoverAndCull(Collection<ChunkBuilder.BuiltChunk> outChunks)
 	{
 		Queue<ChunkNode> chunkQueue = new ArrayDeque<>();
@@ -143,8 +135,6 @@ public class PlanetFaceRenderer
 				chunkQueue.add(new ChunkNode(adjacentChunk, direction));
 			}
 		}
-
-		System.out.println(outChunks.size());
 
 		return outChunks;
 	}

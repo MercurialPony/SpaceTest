@@ -7,6 +7,7 @@ import melonslise.spacetest.planet.CubeData;
 import melonslise.spacetest.planet.CubemapFace;
 import melonslise.spacetest.planet.PlanetProjection;
 import melonslise.spacetest.planet.PlanetProperties;
+import melonslise.spacetest.util.QuatMath;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -16,6 +17,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.RegistryKey;
@@ -27,6 +29,7 @@ import qouteall.imm_ptl.core.ClientWorldLoader;
 // placement doesn't get updated
 // experiment with parallel force initial compilation
 // safe close all resources/threads/etc.
+// wrong scale
 
 /**
  * This is the central planet renderer class
@@ -144,6 +147,11 @@ public class PlanetRenderer
 		//this.faceRenderers.forEach(PlanetFaceRenderer::rebuildCache);
 
 		mtx.push();
+
+		Quaternion q = Quaternion.IDENTITY.copy();
+		QuatMath.nlerp(q, this.planetProps.getLastRotation(), this.planetProps.getRotation(), frameDelta);
+
+		mtx.multiply(q);
 
 		mtx.translate(camPos.x, camPos.y, camPos.z);
 

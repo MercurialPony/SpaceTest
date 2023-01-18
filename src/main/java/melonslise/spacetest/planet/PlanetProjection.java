@@ -50,6 +50,7 @@ public final class PlanetProjection
 
 		// transform from planet-center-relative-space to world-space (since the above sphere is centered at 0, 0)
 		Vec3d planetPos = planetProps.getPosition();
+		pos.rotate(planetProps.getRotation());
 		pos.add((float) planetPos.x, (float) planetPos.y, (float) planetPos.z);
 
 		return pos;
@@ -81,6 +82,8 @@ public final class PlanetProjection
 
 
 
+	// FIXME don't create new quat here
+	// FIXME use a better impl of Vec3f#rotate (default creates a ton of objects)
 	/**
 	 * Maps a point in space-space to planet-space relative to a planet (given its properties)
 	 *
@@ -95,6 +98,9 @@ public final class PlanetProjection
 		// so that the sphere center is back to (0, 0) and normalization will properly scale it (among other things)
 		Vec3d planetPos = planetProps.getPosition();
 		pos.add((float) -planetPos.x, (float) -planetPos.y, (float) -planetPos.z);
+		Quaternion reverseRotation = planetProps.getRotation().copy();
+		reverseRotation.conjugate();
+		pos.rotate(reverseRotation);
 
 		// save the radius for later and downscale the sphere by normalizing the point
 		float radius = MathHelper.sqrt(pos.dot(pos));
