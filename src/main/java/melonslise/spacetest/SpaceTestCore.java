@@ -28,7 +28,7 @@ public class SpaceTestCore implements ModInitializer
 		StItems.register();
 		StItemGroups.register();
 		StBlockEntities.register();
-		SpaceDimension.registerParts();
+		StDimensions.registerParts();
 
 	}
 }

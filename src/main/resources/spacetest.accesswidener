@@ -1,1 +1,6 @@
 accessWidener v1 named
+
+extendable class net/minecraft/world/gen/chunk/NoiseChunkGenerator
+accessible field net/minecraft/world/gen/chunk/NoiseChunkGenerator settings Lnet/minecraft/registry/entry/RegistryEntry;
+
+accessible field net/minecraft/world/gen/StructureAccessor world Lnet/minecraft/world/WorldAccess;

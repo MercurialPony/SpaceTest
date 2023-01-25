@@ -22,6 +22,15 @@ repositories {
 			includeGroupByRegex 'io\\.github\\.onyxstudios.*'
 		}
 	}
+
+	// for sodium
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
 dependencies {
@@ -42,6 +51,8 @@ dependencies {
 	}
 
 	modImplementation "io.github.ladysnake:satin:${satin_version}"
+
+	modImplementation "maven.modrinth:sodium:${sodium_version}"
 
 	// Include Satin as a Jar-in-Jar dependency (optional)
 	// include "io.github.ladysnake:satin:${satin_version}"

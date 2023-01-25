@@ -3,10 +3,11 @@ package melonslise.spacetest.render.planet;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.satin.api.managed.ManagedCoreShader;
 import melonslise.spacetest.init.StShaders;
+import melonslise.spacetest.planet.CubeFaceContext;
 import melonslise.spacetest.planet.CubemapFace;
 import melonslise.spacetest.planet.PlanetProjection;
 import melonslise.spacetest.planet.PlanetProperties;
-import melonslise.spacetest.util.GeneralUtil;
+import melonslise.spacetest.render.LightmapTexture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -23,7 +24,6 @@ import net.minecraft.world.World;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
-import melonslise.spacetest.render.LightmapTexture;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -39,33 +39,27 @@ import java.util.concurrent.CompletableFuture;
  * More details below
  */
 @Environment(EnvType.CLIENT)
-public class PlanetFaceRenderer
+public class VanillaPlanetFaceRenderer
 {
 	public final World world;
 	public final ChunkBuilder chunkBuilder;
 
 	public final PlanetProperties planetProps;
+	public final CubeFaceContext ctx;
 
-	public final CubemapFace face;
-	public final ChunkSectionPos cornerChunkPos;
-	public final int faceHeight;
-
-	public final PlanetFaceStorage chunkStorage;
+	public final VanillaPlanetFaceStorage chunkStorage;
 	public Collection<ChunkBuilder.BuiltChunk> chunkCache;
 	public CompletableFuture<Collection<ChunkBuilder.BuiltChunk>> processTask;
 
-	public PlanetFaceRenderer(World world, ChunkBuilder chunkBuilder, PlanetProperties planetProps, CubemapFace face, ChunkSectionPos cornerChunkPos)
+	public VanillaPlanetFaceRenderer(World world, ChunkBuilder chunkBuilder, PlanetProperties planetProps, CubemapFace face)
 	{
 		this.world = world;
 		this.chunkBuilder = chunkBuilder;
 
 		this.planetProps = planetProps;
+		this.ctx = new CubeFaceContext(face, planetProps, world.countVerticalSections());
 
-		this.face = face;
-		this.cornerChunkPos = cornerChunkPos;
-		this.faceHeight = world.countVerticalSections();
-
-		this.chunkStorage = new PlanetFaceStorage(chunkBuilder, cornerChunkPos, planetProps.getFaceSize(), this.faceHeight);
+		this.chunkStorage = new VanillaPlanetFaceStorage(chunkBuilder, ctx);
 	}
 
 	public ChunkBuilder.BuiltChunk getNeighborChunk(int x, int y, int z, Direction direction)
@@ -91,58 +85,20 @@ public class PlanetFaceRenderer
 	// FIXME is this worth?
 	public boolean cullChunk(ChunkBuilder.BuiltChunk chunk, Vector3f planeNormal, Vector3f delta)
 	{
-		if(chunk.getData().isEmpty())
-		{
-			return true;
-		}
-
 		Vector3d planeCenter = this.planetProps.getPosition();
 		Box bounds = chunk.getBoundingBox();
 
-		for(int i = 0; i < 8; ++i)
-		{
-			// Generate cube vertices
-			//https://stackoverflow.com/a/65306627/11734319
-			delta.set(
-				GeneralUtil.checkBit(i, 0) ? bounds.minX : bounds.maxX,
-				GeneralUtil.checkBit(i, 0) ? bounds.minY : bounds.maxY,
-				GeneralUtil.checkBit(i, 0) ? bounds.minZ : bounds.maxZ);
-			// to face local coords
-			delta.sub(this.cornerChunkPos.getMinX(), this.cornerChunkPos.getMinY(), this.cornerChunkPos.getMinZ());
+		// center of chunk bounds (8 times fewer computations than checking corners)
+		delta.set(MathHelper.lerp(0.5d, bounds.minX, bounds.maxX), MathHelper.lerp(0.5d, bounds.minY, bounds.maxY), MathHelper.lerp(0.5d, bounds.minZ, bounds.maxZ));
+		// to face local coords
+		delta.sub(this.ctx.minX(), this.ctx.minY(), this.ctx.minZ());
 
-			PlanetProjection.faceToSpace(this.planetProps, this.face, delta);
+		PlanetProjection.faceToSpace(this.planetProps, this.ctx.face(), delta);
 
-			delta.sub((float) planeCenter.x, (float) planeCenter.y, (float) planeCenter.z);
+		delta.sub((float) planeCenter.x, (float) planeCenter.y, (float) planeCenter.z);
 
-			// https://math.stackexchange.com/questions/1330210/how-to-check-if-a-point-is-in-the-direction-of-the-normal-of-a-plane
-			if(delta.dot(planeNormal) > 0.0f)
-			{
-				return false;
-			}
-
-				/*
-				delta.add((float) (planeCenter.x - frustum.x), (float) (planeCenter.y - frustum.y), (float) (planeCenter.z - frustum.z));
-
-				boolean inFrustum = true;
-
-				for(Vector4f frustumNormal : frustum.homogeneousCoordinates)
-				{
-					if(delta.getX() * frustumNormal.getX() + delta.getY() * frustumNormal.getY() + delta.getZ() * frustumNormal.getZ() < 0.0f)
-					{
-						inFrustum = false;
-						break;
-					}
-				}
-
-				if(inFrustum)
-				{
-					return true;
-				}
-
-				 */
-		}
-
-		return true;
+		// https://math.stackexchange.com/questions/1330210/how-to-check-if-a-point-is-in-the-direction-of-the-normal-of-a-plane
+		return delta.dot(planeNormal) <= 0.0f;
 	}
 
 	/**
@@ -160,6 +116,7 @@ public class PlanetFaceRenderer
 	 * Worth noting that on the first couple of calls, not many chunks will be discovered, because they haven't been compiled yet and therefor their visibility graphs don't exist yet
 	 * But with every call, more and more chunks are compiled and thus discovered
 	 */
+	/*
 	public Collection<ChunkBuilder.BuiltChunk> processChunks(Collection<ChunkBuilder.BuiltChunk> outChunks)
 	{
 		// setup for culling
@@ -175,8 +132,13 @@ public class PlanetFaceRenderer
 		Queue<ChunkBuilder.BuiltChunk> chunkQueue = new ArrayDeque<>();
 		Direction[] visited = new Direction[this.chunkStorage.chunks.length];
 
-		// FIXME: add all top level chunks in case this one is obstructed?
-		chunkQueue.add(this.chunkStorage.get(this.cornerChunkPos.getX(), this.cornerChunkPos.getY() + this.faceHeight - 1, this.cornerChunkPos.getZ()));
+		for(int x = 0; x < this.planetProps.getFaceSize(); ++x)
+		{
+			for(int z = 0; z < this.planetProps.getFaceSize(); ++z)
+			{
+				chunkQueue.add(this.chunkStorage.get(this.ctx.x() + x, this.ctx.y() + this.ctx.faceHeight() - 1, this.ctx.z() + z));
+			}
+		}
 
 		while (!chunkQueue.isEmpty())
 		{
@@ -187,13 +149,14 @@ public class PlanetFaceRenderer
 			int cy = ChunkSectionPos.getSectionCoord(currentOrigin.getY());
 			int cz = ChunkSectionPos.getSectionCoord(currentOrigin.getZ());
 
-			// TODO: only rebuild chunks that can be seen (i.e. not culled)?
-			// TODO: experiment with parallel force compilation
-			this.rebuildChunk(regionBuilder, currentChunk, cx, cz);
-
 			if(!this.cullChunk(currentChunk, normal, container))
 			{
-				outChunks.add(currentChunk);
+				this.rebuildChunk(regionBuilder, currentChunk, cx, cz);
+
+				if(!currentChunk.getData().isEmpty())
+				{
+					outChunks.add(currentChunk);
+				}
 			}
 
 			for (Direction direction : Direction.values())
@@ -210,6 +173,84 @@ public class PlanetFaceRenderer
 				// save the direction from which we came to this chunk for later
 				visited[adjacentChunk.index] = direction;
 				chunkQueue.add(adjacentChunk);
+			}
+		}
+
+		return outChunks;
+	}
+	 */
+
+	public Collection<ChunkBuilder.BuiltChunk> processChunks(Collection<ChunkBuilder.BuiltChunk> outChunks)
+	{
+		// setup for culling
+		Vector3f container = new Vector3f();
+		container.set(this.planetProps.getPosition());
+		Vector3f normal = MinecraftClient.getInstance().gameRenderer.getCamera().getPos().toVector3f();
+		normal.sub(container);
+
+		// setup for rebuilding
+		ChunkRendererRegionBuilder regionBuilder = new ChunkRendererRegionBuilder();
+
+		// setup for discovery
+		Queue<ChunkBuilder.BuiltChunk> chunkQueue = new ArrayDeque<>();
+
+		for (int x = 0; x < this.planetProps.getFaceSize(); ++x)
+		{
+			for (int z = 0; z < this.planetProps.getFaceSize(); ++z)
+			{
+				chunkQueue.add(this.chunkStorage.get(this.ctx.x() + x, this.ctx.y() + this.ctx.faceHeight() - 1, this.ctx.z() + z));
+			}
+		}
+
+		while (!chunkQueue.isEmpty())
+		{
+			ChunkBuilder.BuiltChunk currentChunk = chunkQueue.poll();
+
+			BlockPos currentOrigin = currentChunk.getOrigin();
+			int cx = ChunkSectionPos.getSectionCoord(currentOrigin.getX());
+			int cy = ChunkSectionPos.getSectionCoord(currentOrigin.getY());
+			int cz = ChunkSectionPos.getSectionCoord(currentOrigin.getZ());
+
+			if(!this.world.getChunk(cx, cz).getSection(this.world.sectionCoordToIndex(cy)).isEmpty())
+			{
+				if(!this.cullChunk(currentChunk, normal, container))
+				{
+					this.rebuildChunk(regionBuilder, currentChunk, cx, cz);
+					outChunks.add(currentChunk);
+				}
+			}
+
+			ChunkBuilder.BuiltChunk nextChunk = this.chunkStorage.get(cx, cy - 1, cz);
+
+			if(nextChunk == null)
+			{
+				continue;
+			}
+
+			if(this.world.getChunk(cx, cz).getSection(this.world.sectionCoordToIndex(cy)).isEmpty() || currentChunk.getData().isVisibleThrough(Direction.UP, Direction.DOWN))
+			{
+				chunkQueue.add(nextChunk);
+			}
+			else
+			{
+				/*
+				// hmm this adds too many unnecessary chunks.. maybe add a maximum depth (or travel distance from surface) parameter to cut off ones that are too deep?
+
+				for(Direction direction : Direction.Type.HORIZONTAL)
+				{
+					int ax = cx + direction.getOffsetX();
+					int ay = cy - 1 + direction.getOffsetY();
+					int az = cz + direction.getOffsetZ();
+
+					ChunkBuilder.BuiltChunk adjacentChunk = this.chunkStorage.get(ax, ay, az);
+
+					if(adjacentChunk != null && (this.world.getChunk(ax, az).getSection(this.world.sectionCoordToIndex(ay)).isEmpty() || adjacentChunk.getData().isVisibleThrough(direction.getOpposite(), Direction.UP)))
+					{
+						chunkQueue.add(nextChunk);
+						break;
+					}
+				}
+				 */
 			}
 		}
 
@@ -244,8 +285,8 @@ public class PlanetFaceRenderer
 
 		for(ManagedCoreShader shader : StShaders.PLANET_SHADERS)
 		{
-			shader.findUniform3f("Corner").set(this.cornerChunkPos.getMinX(), this.cornerChunkPos.getMinY(), this.cornerChunkPos.getMinZ());
-			shader.findUniform1i("FaceIndex").set(this.face.ordinal());
+			shader.findUniform3f("Corner").set(this.ctx.minX(), this.ctx.minY(), this.ctx.minZ());
+			shader.findUniform1i("FaceIndex").set(this.ctx.face().ordinal());
 		}
 
 		// TODO loop this

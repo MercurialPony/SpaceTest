@@ -138,7 +138,7 @@ void main()
 	//pos = mix(pos, pos1, sin(GameTime * 60 * 20) / 2.0 + 0.5);
 
 	// back to player space
-	pos += -CameraPosition;
+	pos -= CameraPosition;
 
 	gl_Position = ProjMat * ModelViewMat * vec4(pos, 1.0);
 

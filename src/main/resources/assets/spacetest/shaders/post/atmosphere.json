@@ -1,0 +1,26 @@
+{
+	"targets":
+	[
+		"swap"
+	],
+	"passes":
+	[
+		{
+			"name": "spacetest:atmosphere",
+			"intarget": "minecraft:main",
+			"outtarget": "swap",
+			"auxtargets":
+			[
+				{
+					"name": "DiffuseDepthSampler",
+					"id": "minecraft:main:depth"
+				}
+			]
+		},
+		{
+			"name": "blit",
+			"intarget": "swap",
+			"outtarget": "minecraft:main"
+		}
+	]
+}

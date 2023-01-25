@@ -62,7 +62,6 @@ public final class PlanetProjection
 		return pos;
 	}
 
-	// FIXME: THIS BUGS ON EDGES HARD
 	/**
 	 * Maps a point in planet-space to space-space given the planet properties
 	 *
@@ -70,15 +69,12 @@ public final class PlanetProjection
 	 */
 	public static Vector3f planetToSpace(PlanetProperties planetProps, Vector3f pos)
 	{
-		ChunkSectionPos origin = planetProps.getOrigin();
 		int faceSizeBlocks = planetProps.getFaceSize() * 16;
 
-		// transform the point to be relative to planet origin
-		pos.sub(origin.getMinX(), origin.getMinY(), origin.getMinZ());
-		// determine which face it is on
-		CubemapFace face = CubemapFace.from(MathHelper.floor(pos.x / faceSizeBlocks), MathHelper.floor(pos.z / faceSizeBlocks));
+		// determine the face this point is on
+		CubemapFace face = determineFace(planetProps, MathHelper.floor(pos.x), MathHelper.floor(pos.z));
 		// find the local face-space coordinates
-		pos.sub(face.planeOffsetX * faceSizeBlocks, 0.0f, face.planeOffsetZ * faceSizeBlocks);
+		pos.sub(face.offsetX * faceSizeBlocks, 0.0f, face.offsetZ * faceSizeBlocks);
 
 		// do the rest
 		faceToSpace(planetProps, face, pos);
@@ -131,9 +127,20 @@ public final class PlanetProjection
 	/**
 	 * Finds the planet-space height from the space-space height (planet layer radius)
 	 */
-	private static float heightToRadius(PlanetProperties planetProps, float height)
+	public static float heightToRadius(PlanetProperties planetProps, float height)
 	{
 		return planetProps.getStartRadius() * (float) Math.pow(planetProps.getRadiusRatio(), height);
+	}
+
+	// FIXME: THIS BUGS ON POSITIVE (16) EDGES HARD
+	public static CubemapFace determineFace(PlanetProperties planetProps, int x, int z)
+	{
+		ChunkSectionPos origin = planetProps.getOrigin();
+		int faceSizeBlocks = planetProps.getFaceSize() * 16;
+
+		// transform the point to be relative to planet origin
+		// determine which face it is on
+		return CubemapFace.from(Math.floorDiv(x - origin.getMinX(), faceSizeBlocks), Math.floorDiv(z - origin.getMinZ(), faceSizeBlocks));
 	}
 
 	// Thank you
@@ -285,7 +292,7 @@ public final class PlanetProjection
 		CubemapFace face = CubemapFace.values()[(int) uvf.z];
 
 		uvf.set(uvf.x, 0.0f, uvf.y);
-		uvf.add(face.planeOffsetX, 0.0f, face.planeOffsetZ);
+		uvf.add(face.offsetX, 0.0f, face.offsetZ);
 		uvf.mul(faceSize * 16.0f, 0.0f, faceSize * 16.0f);
 		uvf.add(origin.getMinX(), origin.getMinY(), origin.getMinZ());
 

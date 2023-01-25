@@ -11,31 +11,48 @@ public enum CubemapFace
 	UP(0, 1),
 	DOWN(0, -1);
 
-	private static final CubemapFace[] FACE_BY_OFFSET = Util.make(new CubemapFace[6], array ->
+	private static final CubemapFace[] FACE_BY_OFFSET = Util.make(new CubemapFace[13], array ->
 	{
-		for(int i = 0; i < array.length; ++i)
+		for(CubemapFace face : CubemapFace.values())
 		{
-			CubemapFace face = CubemapFace.values()[i];
-			array[hash(face.planeOffsetX, face.planeOffsetZ)] = face;
+			array[hash(face.offsetX, face.offsetZ)] = face;
 		}
 	});
 
-	public final int planeOffsetX;
-	public final int planeOffsetZ;
+	public final int offsetX;
+	public final int offsetZ;
 
 	CubemapFace(int planeOffsetX, int planeOffsetZ)
 	{
-		this.planeOffsetX = planeOffsetX;
-		this.planeOffsetZ = planeOffsetZ;
+		this.offsetX = planeOffsetX;
+		this.offsetZ = planeOffsetZ;
 	}
 
-	public static int hash(int offsetX, int offsetZ)
+	// Thanks
+	// https://stackoverflow.com/questions/919612/mapping-two-integers-to-one-in-a-unique-and-deterministic-way
+	// FIXME this produces numbers up to 13, try to shrink that down so the array is smaller too
+	public static int hash(int x, int z)
 	{
-		return offsetZ == 0 ? offsetX + 2 : (offsetZ + 1) / 2 + 4;
+		x += 2;
+		z += 1;
+
+		if(x < 0 || z < 0)
+		{
+			return -1;
+		}
+
+		return (z + x) * (z + x + 1) / 2 + z;
 	}
 
 	public static CubemapFace from(int offsetX, int offsetZ)
 	{
-		return FACE_BY_OFFSET[hash(offsetX, offsetZ)];
+		int hash = hash(offsetX, offsetZ);
+
+		if(hash < 0 || hash >= FACE_BY_OFFSET.length)
+		{
+			return null;
+		}
+
+		return FACE_BY_OFFSET[hash];
 	}
 }

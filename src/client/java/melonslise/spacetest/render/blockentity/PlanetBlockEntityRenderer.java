@@ -1,7 +1,9 @@
 package melonslise.spacetest.render.blockentity;
 
+import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import melonslise.spacetest.blockentity.PlanetBlockEntity;
 import melonslise.spacetest.render.planet.PlanetRenderer;
+import melonslise.spacetest.render.planet.sodium.SodiumPlanetRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -23,6 +25,7 @@ public class PlanetBlockEntityRenderer implements BlockEntityRenderer<PlanetBloc
 	@Override
 	public void render(PlanetBlockEntity be, float frameDelta, MatrixStack mtx, VertexConsumerProvider vertexConsumers, int light, int overlay)
 	{
+		/*
 		PlanetRenderer pr = this.testThingy.get(be);
 
 		if(pr == null)
@@ -41,6 +44,26 @@ public class PlanetBlockEntityRenderer implements BlockEntityRenderer<PlanetBloc
 		mtx.translate(0.5d, 0.5d, 0.5d);
 		pr.render(mtx, frameDelta);
 		mtx.pop();
+
+		 */
+
+		RenderDevice.enterManagedCode();
+
+		PlanetRenderer pr = this.testThingy.get(be);
+
+		if(pr == null)
+		{
+			if(be.planetProps != null)
+			{
+				pr = new SodiumPlanetRenderer();
+				pr.init(World.OVERWORLD, be.planetProps);
+				testThingy.put(be, pr);
+			}
+		}
+
+		if(pr != null) pr.render(mtx, frameDelta);
+
+		RenderDevice.exitManagedCode();
 	}
 
 	@Override
@@ -52,6 +75,6 @@ public class PlanetBlockEntityRenderer implements BlockEntityRenderer<PlanetBloc
 	@Override
 	public int getRenderDistance()
 	{
-		return 512;
+		return 1024;
 	}
 }
