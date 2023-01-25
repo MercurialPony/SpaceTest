@@ -49,6 +49,7 @@ public class SodiumPlanetRenderer implements PlanetRenderer
 			ChunkCameraContext camCtx = new ChunkCameraContext(camPos.x, camPos.y, camPos.z);
 
 			Matrix4f modelView = new Matrix4f(SpaceTestClient.modelViewMat);
+			modelView.translate(0.0f, 1.0f, 0.0f);
 			//modelView.translate((float) -this.planetProps.getPosition().x, (float) -this.planetProps.getPosition().y, (float) -this.planetProps.getPosition().z);
 			//modelView.translate((float) this.planetProps.getPosition().x, -50.0f, (float) this.planetProps.getPosition().z);
 
