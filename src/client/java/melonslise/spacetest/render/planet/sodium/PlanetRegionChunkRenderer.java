@@ -1,34 +1,49 @@
 package melonslise.spacetest.render.planet.sodium;
 
-import me.jellysquid.mods.sodium.client.gl.buffer.GlMutableBuffer;
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.gl.shader.*;
-import me.jellysquid.mods.sodium.client.gl.shader.uniform.GlUniformFloat;
-import me.jellysquid.mods.sodium.client.gl.shader.uniform.GlUniformFloat3v;
-import me.jellysquid.mods.sodium.client.gl.shader.uniform.GlUniformInt;
 import me.jellysquid.mods.sodium.client.model.vertex.type.ChunkVertexType;
 import me.jellysquid.mods.sodium.client.render.chunk.RegionChunkRenderer;
-import me.jellysquid.mods.sodium.client.render.chunk.shader.*;
+import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkFogMode;
+import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderBindingPoints;
+import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
+import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
 import melonslise.spacetest.SpaceTestCore;
 import melonslise.spacetest.mixin.ShaderChunkRendererAccessor;
 import melonslise.spacetest.planet.CubeFaceContext;
 import melonslise.spacetest.planet.PlanetProperties;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
-public class PlanetRegionChunkRenderer extends RegionChunkRenderer
+public class PlanetRegionChunkRenderer extends RegionChunkRenderer implements PlanetRenderOptions
 {
 	public CubeFaceContext faceCtx;
 	public PlanetProperties planetProps;
+	public BlockPos.Mutable sectionOrigin;
 
 	public PlanetRegionChunkRenderer(RenderDevice device, ChunkVertexType vertexType)
 	{
 		super(device, vertexType);
+		this.sectionOrigin = new BlockPos.Mutable();
 	}
 
 	public void savePlanetUniforms(CubeFaceContext faceCtx, PlanetProperties props)
 	{
 		this.faceCtx = faceCtx;
 		this.planetProps = props;
+	}
+
+	@Override
+	public CubeFaceContext faceCtx()
+	{
+		return this.faceCtx;
+	}
+
+	@Override
+	public PlanetProperties planetProps()
+	{
+		return this.planetProps;
 	}
 
 	@Override
@@ -65,50 +80,12 @@ public class PlanetRegionChunkRenderer extends RegionChunkRenderer
 				.bindAttribute("a_TexCoord", ChunkShaderBindingPoints.ATTRIBUTE_BLOCK_TEXTURE)
 				.bindAttribute("a_LightCoord", ChunkShaderBindingPoints.ATTRIBUTE_LIGHT_TEXTURE)
 				.bindFragmentData("fragColor", ChunkShaderBindingPoints.FRAG_COLOR)
-				.link(shader -> new PlanetChunkShaderInterface(shader, options, this));
+				.link(shader -> new PlanetChunkShaderInterface(shader, options, this, MinecraftClient.getInstance().gameRenderer.getCamera()::getPos));
 		}
 		finally
 		{
 			vertShader.delete();
 			fragShader.delete();
-		}
-	}
-
-	public static class PlanetChunkShaderInterface extends ChunkShaderInterface
-	{
-		public final PlanetRegionChunkRenderer renderer;
-
-		public GlUniformFloat3v corner;
-		public GlUniformInt faceIndex;
-		public GlUniformInt faceSize;
-		public GlUniformFloat startRadius;
-		public GlUniformFloat radiusRatio;
-
-		public PlanetChunkShaderInterface(ShaderBindingContext ctx, ChunkShaderOptions options, PlanetRegionChunkRenderer renderer)
-		{
-			super(ctx, options);
-			this.corner = ctx.bindUniform("Corner", GlUniformFloat3v::new);
-			this.faceIndex = ctx.bindUniform("FaceIndex", GlUniformInt::new);
-			this.faceSize = ctx.bindUniform("FaceSize", GlUniformInt::new);
-			this.startRadius = ctx.bindUniform("StartRadius", GlUniformFloat::new);
-			this.radiusRatio = ctx.bindUniform("RadiusRatio", GlUniformFloat::new);
-			this.renderer = renderer;
-		}
-
-		@Override
-		public void setDrawUniforms(GlMutableBuffer buffer)
-		{
-			super.setDrawUniforms(buffer);
-			this.setPlanetUniforms(this.renderer.faceCtx, this.renderer.planetProps);
-		}
-
-		public void setPlanetUniforms(CubeFaceContext faceCtx, PlanetProperties planetProps)
-		{
-			this.corner.set(faceCtx.minX(), faceCtx.minY(), faceCtx.minZ());
-			this.faceIndex.set(faceCtx.face().ordinal());
-			this.faceSize.set(planetProps.getFaceSize() * 16);
-			this.startRadius.set(planetProps.getStartRadius());
-			this.radiusRatio.set(planetProps.getRadiusRatio());
 		}
 	}
 }

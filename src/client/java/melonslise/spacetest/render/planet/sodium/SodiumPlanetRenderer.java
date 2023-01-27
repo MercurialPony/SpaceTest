@@ -34,7 +34,7 @@ public class SodiumPlanetRenderer implements PlanetRenderer
 	{
 		WorldRenderer wr = ClientWorldLoader.getWorldRenderer(worldKey);
 
-		if(wr instanceof WorldRendererExtended wre)
+		if (wr instanceof WorldRendererExtended wre)
 		{
 			this.wr = wre.getSodiumWorldRenderer();
 			this.planetProps = planetProps;
@@ -43,15 +43,13 @@ public class SodiumPlanetRenderer implements PlanetRenderer
 
 	public void render(MatrixStack mtx, float tickDelta)
 	{
-		if(this.wr != null)
+		if (this.wr != null)
 		{
 			Vec3d camPos = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
 			ChunkCameraContext camCtx = new ChunkCameraContext(camPos.x, camPos.y, camPos.z);
 
 			Matrix4f modelView = new Matrix4f(SpaceTestClient.modelViewMat);
-			modelView.translate(0.0f, 1.0f, 0.0f);
-			//modelView.translate((float) -this.planetProps.getPosition().x, (float) -this.planetProps.getPosition().y, (float) -this.planetProps.getPosition().z);
-			//modelView.translate((float) this.planetProps.getPosition().x, -50.0f, (float) this.planetProps.getPosition().z);
+			modelView.translate((float) this.planetProps.getPosition().x, (float) this.planetProps.getPosition().y, (float) this.planetProps.getPosition().z);
 
 			PlanetRegionChunkRenderer renderer = new PlanetRegionChunkRenderer(RenderDevice.INSTANCE, ChunkModelVertexFormats.DEFAULT);
 
@@ -60,23 +58,23 @@ public class SodiumPlanetRenderer implements PlanetRenderer
 				Method m = RenderSectionManager.class.getDeclaredMethod("getRenderSection", int.class, int.class, int.class);
 				m.setAccessible(true);
 
-				for(CubemapFace face : CubemapFace.values())
+				for (CubemapFace face : CubemapFace.values())
 				{
 					ChunkSectionPos origin = this.planetProps.getOrigin();
 
-					ChunkRenderList chunkList = new ChunkRenderList();
+					ChunkRenderList chunkRenderList = new ChunkRenderList();
 
-					for(int y = 0; y < 24; ++y)
+					for (int y = 0; y < 24; ++y)
 					{
 						RenderSection section = (RenderSection) m.invoke(this.wr.getRenderSectionManager(), origin.getX() + face.offsetX, origin.getY() + y, origin.getZ() + face.offsetZ);
 
-						if(section != null)
+						if (section != null)
 						{
-							chunkList.add(section);
+							chunkRenderList.add(section);
 						}
 					}
 
-					for(BlockRenderPass pass : BlockRenderPass.VALUES)
+					for (BlockRenderPass pass : BlockRenderPass.VALUES)
 					{
 						pass.startDrawing();
 
@@ -84,7 +82,7 @@ public class SodiumPlanetRenderer implements PlanetRenderer
 
 						try
 						{
-							renderer.render(new ChunkRenderMatrices(RenderSystem.getProjectionMatrix(), modelView), RenderDevice.INSTANCE.createCommandList(), chunkList, pass, camCtx);
+							renderer.render(new ChunkRenderMatrices(RenderSystem.getProjectionMatrix(), modelView), RenderDevice.INSTANCE.createCommandList(), chunkRenderList, pass, camCtx);
 						}
 						catch (Exception e)
 						{
@@ -99,6 +97,8 @@ public class SodiumPlanetRenderer implements PlanetRenderer
 			{
 				throw new RuntimeException(e);
 			}
+
+			renderer.delete();
 		}
 	}
 }

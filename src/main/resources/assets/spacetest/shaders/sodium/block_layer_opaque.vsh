@@ -56,17 +56,17 @@ void main()
 {
 	_vert_init();
 
-	// Transform the chunk-local vertex position into world model space
 	vec3 position = u_RegionOffset + _draw_translation + _vert_position;
-	position *= 2.0;
 
-	//position -= Corner;
+	position += CameraPosition - Corner;
 
-	//float u = position.x / FaceSize;
-	//float v = position.z / FaceSize;
-	//float h = StartRadius * pow(RadiusRatio, position.y);
+	float u = position.x / FaceSize;
+	float v = position.z / FaceSize;
+	float h = StartRadius * pow(RadiusRatio, position.y);
 
-	//position = h * cubeToSphereAdjusted(planeToCube(FaceIndex, u, v));
+	position = h * cubeToSphereAdjusted(planeToCube(FaceIndex, u, v));
+
+	position -= CameraPosition;
 
 	// Transform the vertex position into model-view-projection space
 	gl_Position = u_ProjectionMatrix * u_ModelViewMatrix * vec4(position, 1.0);
