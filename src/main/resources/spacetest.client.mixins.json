@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "melonslise.spacetest.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"client": [
+		"WorldRendererMixin",
+		"compat.sodium.RenderSectionMixin",
+		"compat.sodium.ShaderChunkRendererMixin",
+		"compat.sodium.RegionChunkRendererMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

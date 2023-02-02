@@ -15,6 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Vector3f;
 
+// FIXME will cause issues with mods that mixin to LightmapTextureManager though
 // this is essentially LightmapTextureManager copy-pasted and modified to work with any world
 @Environment(EnvType.CLIENT)
 public class LightmapTexture implements AutoCloseable

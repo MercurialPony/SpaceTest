@@ -8,7 +8,9 @@ import melonslise.spacetest.init.StShaders;
 import melonslise.spacetest.planet.CubeData;
 import melonslise.spacetest.planet.PlanetProjection;
 import melonslise.spacetest.planet.PlanetProperties;
+import melonslise.spacetest.planet.PlanetState;
 import melonslise.spacetest.render.LightmapTexture;
+import melonslise.spacetest.world.PlanetWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -16,13 +18,10 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
-import qouteall.imm_ptl.core.ClientWorldLoader;
 
 // FIXME: Bugs/improvements:
 // placement doesn't get updated
@@ -44,36 +43,32 @@ public class VanillaPlanetRenderer implements PlanetRenderer
 
 	public CubeData<VanillaPlanetFaceRenderer> faceRenderers;
 
-	// FIXME get properties from world
-	public void init(RegistryKey<World> worldKey, PlanetProperties planetProps)
+	@Override
+	public void init(ClientWorld world, WorldRenderer worldRenderer)
 	{
-		ClientWorld world = ClientWorldLoader.getWorld(worldKey);
-		WorldRenderer wr = ClientWorldLoader.getWorldRenderer(worldKey);
-
-		if(wr == null)
+		if(world == null)
 		{
 			return;
 		}
 
-		this.planetProps = planetProps;
+		this.planetProps = ((PlanetWorld) world).getPlanetProperties();
 
 		this.lightmap = new LightmapTexture(world);
 
-		this.faceRenderers = new CubeData<>(face -> new VanillaPlanetFaceRenderer(world, wr.getChunkBuilder(), planetProps, face));
+		this.faceRenderers = new CubeData<>(face -> new VanillaPlanetFaceRenderer(world, worldRenderer.getChunkBuilder(), planetProps, face));
 	}
 
-	public void render(MatrixStack mtx, float frameDelta)
+	@Override
+	public void render(PlanetState planetState, MatrixStack mtx, float frameDelta)
 	{
 		MinecraftClient mc = MinecraftClient.getInstance();
 		Camera cam = mc.gameRenderer.getCamera();
 		Vec3d camPos = cam.getPos();
 
-		this.faceRenderers.forEach(VanillaPlanetFaceRenderer::processChunksAsync);
+		this.faceRenderers.forEach(r -> r.processChunksAsync(this.planetProps, planetState));
 
 		mtx.push();
-
-		mtx.multiply(this.planetProps.getLastRotation().nlerp(this.planetProps.getRotation(), frameDelta, new Quaternionf())); // FIXME ughh object creationnn
-
+		mtx.multiply(planetState.getLastRotation().nlerp(planetState.getRotation(), frameDelta, new Quaternionf())); // FIXME ughh object creationnn
 		mtx.translate(camPos.x, camPos.y, camPos.z);
 
 		for(ManagedCoreShader shader : StShaders.PLANET_SHADERS)
@@ -92,7 +87,7 @@ public class VanillaPlanetRenderer implements PlanetRenderer
 
 		mtx.pop();
 
-		Vector3d center = this.planetProps.getPosition();
+		Vector3d center = planetState.getPosition();
 
 		// FIXME
 		ManagedShaderEffect shader = StShaders.ATMOSPHERE;
@@ -106,5 +101,11 @@ public class VanillaPlanetRenderer implements PlanetRenderer
 
 		shader.getShaderEffect().render(frameDelta);
 		MinecraftClient.getInstance().getFramebuffer().beginWrite(true);
+	}
+
+	@Override
+	public void close()
+	{
+
 	}
 }

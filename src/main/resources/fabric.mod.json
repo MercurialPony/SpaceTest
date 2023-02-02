@@ -23,7 +23,12 @@
 	},
 	"mixins":
 	[
-		"spacetest.mixins.json"
+		"spacetest.common.mixins.json",
+
+		{
+			"config": "spacetest.client.mixins.json",
+			"environment": "client"
+		}
 	],
 	"accessWidener": "spacetest.accesswidener",
 
@@ -35,5 +40,9 @@
 		"java": ">=17",
 		"imm_ptl_core": ">=2.4.8",
 		"satin": ">=1.10.0"
+	},
+	"suggests":
+	{
+		"sodium": ">=0.4.8"
 	}
 }

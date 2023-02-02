@@ -41,7 +41,7 @@ public final class PlanetProjection
 	 * Face-space is another one of the many local coordinate systems involved in the remapping process
 	 * It is the coordinates relative to the corner of the face (e.g. if the face size is 16 blocks then X and Z will never exceed that)
 	 */
-	public static Vector3f faceToSpace(PlanetProperties planetProps, CubemapFace face, Vector3f pos)
+	public static Vector3f faceToSpace(PlanetProperties planetProps, PlanetState planetState, CubemapFace face, Vector3f pos)
 	{
 		float height = pos.y;
 
@@ -55,8 +55,8 @@ public final class PlanetProjection
 		pos.mul(heightToRadius(planetProps, height));
 
 		// transform from planet-center-relative-space to world-space (since the above sphere is centered at 0, 0)
-		pos.rotate(new Quaternionf(planetProps.getRotation())); // FIXME ughh object creationnnn
-		Vector3d planetPos = planetProps.getPosition();
+		pos.rotate(new Quaternionf(planetState.getRotation())); // FIXME ughh object creationnnn
+		Vector3d planetPos = planetState.getPosition();
 		pos.add((float) planetPos.x, (float) planetPos.y, (float) planetPos.z);
 
 		return pos;
@@ -65,9 +65,9 @@ public final class PlanetProjection
 	/**
 	 * Maps a point in planet-space to space-space given the planet properties
 	 *
-	 * Works as described above. Does the same thing as {@link #faceToSpace(PlanetProperties, CubemapFace, Vector3f)} but also determines which face the point is on right away
+	 * Works as described above. Does the same thing as {@link #faceToSpace(PlanetProperties, PlanetState, CubemapFace, Vector3f)} but also determines which face the point is on right away
 	 */
-	public static Vector3f planetToSpace(PlanetProperties planetProps, Vector3f pos)
+	public static Vector3f planetToSpace(PlanetProperties planetProps, PlanetState planetState, Vector3f pos)
 	{
 		int faceSizeBlocks = planetProps.getFaceSize() * 16;
 
@@ -77,7 +77,7 @@ public final class PlanetProjection
 		pos.sub(face.offsetX * faceSizeBlocks, 0.0f, face.offsetZ * faceSizeBlocks);
 
 		// do the rest
-		faceToSpace(planetProps, face, pos);
+		faceToSpace(planetProps, planetState, face, pos);
 
 		return pos;
 	}
@@ -92,13 +92,13 @@ public final class PlanetProjection
 	 * 2. Reverse the cube->cubemap mapping. Determine the face the point is on and correctly map it onto that face
 	 * 3. Transform the uv back into planet-world coordinates and reverse the previously saved radius to find the correct height
 	 */
-	public static Vector3f spaceToPlanet(PlanetProperties planetProps, Vector3f pos)
+	public static Vector3f spaceToPlanet(PlanetProperties planetProps, PlanetState planetState, Vector3f pos)
 	{
 		// Move from absolute coords to planet-center-relative-space
 		// so that the sphere center is back to (0, 0) and normalization will properly scale it (among other things)
-		Vector3d planetPos = planetProps.getPosition();
+		Vector3d planetPos = planetState.getPosition();
 		pos.sub((float) planetPos.x, (float) planetPos.y, (float) planetPos.z);
-		pos.rotate(new Quaternionf(planetProps.getRotation()).conjugate()); // FIXME ughh object creationnnn
+		pos.rotate(new Quaternionf(planetState.getRotation()).conjugate()); // FIXME ughh object creationnnn
 
 		// save the radius for later and downscale the sphere by normalizing the point
 		float radius = MathHelper.sqrt(pos.dot(pos));

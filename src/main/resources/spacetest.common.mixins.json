@@ -7,10 +7,6 @@
 		"ServerWorldMixin",
 		"WorldMixin"
 	],
-	"client": [
-		"ShaderChunkRendererAccessor",
-		"GlProgramMixin"
-	],
 	"injectors": {
 		"defaultRequire": 1
 	}

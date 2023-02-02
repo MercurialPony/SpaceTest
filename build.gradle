@@ -52,7 +52,7 @@ dependencies {
 
 	modImplementation "io.github.ladysnake:satin:${satin_version}"
 
-	modImplementation "maven.modrinth:sodium:${sodium_version}"
+	modCompileOnly "maven.modrinth:sodium:${sodium_version}"
 
 	// Include Satin as a Jar-in-Jar dependency (optional)
 	// include "io.github.ladysnake:satin:${satin_version}"

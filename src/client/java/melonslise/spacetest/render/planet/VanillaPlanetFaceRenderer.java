@@ -3,10 +3,7 @@ package melonslise.spacetest.render.planet;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.satin.api.managed.ManagedCoreShader;
 import melonslise.spacetest.init.StShaders;
-import melonslise.spacetest.planet.CubeFaceContext;
-import melonslise.spacetest.planet.CubemapFace;
-import melonslise.spacetest.planet.PlanetProjection;
-import melonslise.spacetest.planet.PlanetProperties;
+import melonslise.spacetest.planet.*;
 import melonslise.spacetest.render.LightmapTexture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -44,7 +41,6 @@ public class VanillaPlanetFaceRenderer
 	public final World world;
 	public final ChunkBuilder chunkBuilder;
 
-	public final PlanetProperties planetProps;
 	public final CubeFaceContext ctx;
 
 	public final VanillaPlanetFaceStorage chunkStorage;
@@ -56,20 +52,9 @@ public class VanillaPlanetFaceRenderer
 		this.world = world;
 		this.chunkBuilder = chunkBuilder;
 
-		this.planetProps = planetProps;
-		this.ctx = new CubeFaceContext(face, planetProps, world.countVerticalSections());
+		this.ctx = new CubeFaceContext(face, planetProps, world);
 
 		this.chunkStorage = new VanillaPlanetFaceStorage(chunkBuilder, ctx);
-	}
-
-	public ChunkBuilder.BuiltChunk getNeighborChunk(int x, int y, int z, Direction direction)
-	{
-		return this.chunkStorage.get(x + direction.getOffsetX(), y + direction.getOffsetY(), z + direction.getOffsetZ());
-	}
-
-	public boolean isSideVisibleThroughChunk(ChunkBuilder.BuiltChunk chunk, Direction visitedFromDirection, Direction targetDirection)
-	{
-		return visitedFromDirection == null || chunk.getData().isVisibleThrough(visitedFromDirection.getOpposite(), targetDirection);
 	}
 
 	// TODO: what is the difference between shouldRenderOnUpdate and checking world.isChunkLoaded (considering the immptl mixin)
@@ -83,9 +68,9 @@ public class VanillaPlanetFaceRenderer
 	}
 
 	// FIXME is this worth?
-	public boolean cullChunk(ChunkBuilder.BuiltChunk chunk, Vector3f planeNormal, Vector3f delta)
+	public boolean cullChunk(PlanetProperties planetProps, PlanetState planetState, ChunkBuilder.BuiltChunk chunk, Vector3f planeNormal, Vector3f delta)
 	{
-		Vector3d planeCenter = this.planetProps.getPosition();
+		Vector3d planeCenter = planetState.getPosition();
 		Box bounds = chunk.getBoundingBox();
 
 		// center of chunk bounds (8 times fewer computations than checking corners)
@@ -93,7 +78,7 @@ public class VanillaPlanetFaceRenderer
 		// to face local coords
 		delta.sub(this.ctx.minX(), this.ctx.minY(), this.ctx.minZ());
 
-		PlanetProjection.faceToSpace(this.planetProps, this.ctx.face(), delta);
+		PlanetProjection.faceToSpace(planetProps, planetState, this.ctx.face(), delta);
 
 		delta.sub((float) planeCenter.x, (float) planeCenter.y, (float) planeCenter.z);
 
@@ -180,11 +165,11 @@ public class VanillaPlanetFaceRenderer
 	}
 	 */
 
-	public Collection<ChunkBuilder.BuiltChunk> processChunks(Collection<ChunkBuilder.BuiltChunk> outChunks)
+	public Collection<ChunkBuilder.BuiltChunk> processChunks(PlanetProperties planetProps, PlanetState planetState, Collection<ChunkBuilder.BuiltChunk> outChunks)
 	{
 		// setup for culling
 		Vector3f container = new Vector3f();
-		container.set(this.planetProps.getPosition());
+		container.set(planetState.getPosition());
 		Vector3f normal = MinecraftClient.getInstance().gameRenderer.getCamera().getPos().toVector3f();
 		normal.sub(container);
 
@@ -194,9 +179,9 @@ public class VanillaPlanetFaceRenderer
 		// setup for discovery
 		Queue<ChunkBuilder.BuiltChunk> chunkQueue = new ArrayDeque<>();
 
-		for (int x = 0; x < this.planetProps.getFaceSize(); ++x)
+		for (int x = 0; x < this.ctx.faceSize(); ++x)
 		{
-			for (int z = 0; z < this.planetProps.getFaceSize(); ++z)
+			for (int z = 0; z < this.ctx.faceSize(); ++z)
 			{
 				chunkQueue.add(this.chunkStorage.get(this.ctx.x() + x, this.ctx.y() + this.ctx.faceHeight() - 1, this.ctx.z() + z));
 			}
@@ -213,7 +198,7 @@ public class VanillaPlanetFaceRenderer
 
 			if(!this.world.getChunk(cx, cz).getSection(this.world.sectionCoordToIndex(cy)).isEmpty())
 			{
-				if(!this.cullChunk(currentChunk, normal, container))
+				if(!this.cullChunk(planetProps, planetState,  currentChunk, normal, container))
 				{
 					this.rebuildChunk(regionBuilder, currentChunk, cx, cz);
 					outChunks.add(currentChunk);
@@ -257,7 +242,7 @@ public class VanillaPlanetFaceRenderer
 		return outChunks;
 	}
 
-	public void processChunksAsync()
+	public void processChunksAsync(PlanetProperties planetProps, PlanetState planetState)
 	{
 		if(this.processTask != null && !this.processTask.isDone())
 		{
@@ -265,7 +250,7 @@ public class VanillaPlanetFaceRenderer
 		}
 
 		// TODO init queue and list with initial size (does that improve performance)?
-		this.processTask = CompletableFuture.supplyAsync(() -> this.processChunks(new ArrayList<>()), Util.getMainWorkerExecutor())
+		this.processTask = CompletableFuture.supplyAsync(() -> this.processChunks(planetProps, planetState, new ArrayList<>()), Util.getMainWorkerExecutor())
 			.exceptionally(e ->
 			{
 				e.printStackTrace();

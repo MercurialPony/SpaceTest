@@ -1,17 +1,18 @@
 package melonslise.spacetest.planet;
 
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.World;
 
 public record CubeFaceContext(CubemapFace face, int x, int y, int z, int faceSize, int faceHeight)
 {
-	public CubeFaceContext(CubemapFace face, PlanetProperties props, int height)
+	public CubeFaceContext(CubemapFace face, PlanetProperties props, World world)
 	{
 		this(face,
 			props.getOrigin().getX() + face.offsetX * props.getFaceSize(),
 			props.getOrigin().getY(),
 			props.getOrigin().getZ() + face.offsetZ * props.getFaceSize(),
 			props.getFaceSize(),
-			height);
+			world.countVerticalSections());
 	}
 
 	public int minX()

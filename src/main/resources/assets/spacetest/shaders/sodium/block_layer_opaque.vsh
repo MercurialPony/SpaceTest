@@ -7,7 +7,6 @@
 out vec4 v_Color;
 out vec2 v_TexCoord;
 
-uniform int u_FogShape;
 uniform vec3 u_RegionOffset;
 uniform sampler2D u_LightTex; // The light map texture sampler
 
