@@ -2,12 +2,10 @@ package melonslise.spacetest.compat.sodium;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
+import me.jellysquid.mods.sodium.client.SodiumClientMod;
 import me.jellysquid.mods.sodium.client.gl.device.CommandList;
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
-import me.jellysquid.mods.sodium.client.render.chunk.ChunkCameraContext;
-import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderList;
-import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderMatrices;
-import me.jellysquid.mods.sodium.client.render.chunk.ChunkTracker;
+import me.jellysquid.mods.sodium.client.render.chunk.*;
 import me.jellysquid.mods.sodium.client.render.chunk.format.ChunkModelVertexFormats;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPassManager;
 import me.jellysquid.mods.sodium.client.util.NativeBuffer;
@@ -31,12 +29,10 @@ import org.joml.Vector3d;
 // FIXME
 // IP clipping error in console
 // batch all faces and do lazy collection (use needsUpdate from updater)
-// placement doesn't get updated
 // refresh on resource reload/etc?
 // add transparency sorting
-// schedule chunk closest to the camera to compile first
-// grab compiled chunks from worldrenderer?
-// mess around with section priorities - try to maybe set important?
+// schedule chunks closest to the camera to compile first
+// borrow already compiled chunks from worldrenderer
 public class SodiumPlanetRenderer implements PlanetRenderer
 {
 	protected PlanetProperties planetProps;
@@ -82,7 +78,7 @@ public class SodiumPlanetRenderer implements PlanetRenderer
 			this.sectionStorage.chunkSectionGetter,
 			this.sectionStorage::obtainLoadedRenderSection,
 			this.sectionUpdater::schedulePendingUpdates,
-			new CubeFaceContext(face, planetProps, world)
+			new CubeFaceContext(face, this.planetProps, world)
 		));
 		this.sectionRenderer = new SodiumPlanetRegionRenderer(RenderDevice.INSTANCE, ChunkModelVertexFormats.DEFAULT);
 
@@ -178,6 +174,24 @@ public class SodiumPlanetRenderer implements PlanetRenderer
 		mtx.pop();
 
 		RenderDevice.exitManagedCode();
+	}
+
+	@Override
+	public void scheduleRebuild(int x, int y, int z, boolean important)
+	{
+		this.sectionUpdater.sectionCache.invalidate(x, y, z);
+
+		RenderSection section = this.sectionStorage.getRenderSectionRaw(x, y, z);
+
+		if (section == null || !section.isBuilt())
+		{
+			return;
+		}
+
+		boolean alwaysDeferChunkUpdates = SodiumClientMod.options().performance.alwaysDeferChunkUpdates;
+
+		// (important || this.isChunkPrioritized(section))
+		section.markForUpdate(!alwaysDeferChunkUpdates && important ? ChunkUpdateType.IMPORTANT_REBUILD : ChunkUpdateType.REBUILD);
 	}
 
 	private boolean closed()

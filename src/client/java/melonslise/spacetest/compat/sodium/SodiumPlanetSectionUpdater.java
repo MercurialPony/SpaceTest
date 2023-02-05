@@ -29,16 +29,16 @@ import java.util.concurrent.CompletableFuture;
 
 public class SodiumPlanetSectionUpdater
 {
-	private final ClientWorld world;
-	private final ChunkTracker chunkTracker;
+	protected final ClientWorld world;
+	protected final ChunkTracker chunkTracker;
 
-	private final CommandList commandList;
+	protected final CommandList commandList;
 
-	private final RenderRegionManager regionManager;
-	private final ClonedChunkSectionCache sectionCache;
+	protected final RenderRegionManager regionManager;
+	public final ClonedChunkSectionCache sectionCache;
 
-	private final ChunkBuilder sectionBuilder;
-	private final Map<ChunkUpdateType, PriorityQueue<RenderSection>> rebuildQueues;
+	protected final ChunkBuilder sectionBuilder;
+	protected final Map<ChunkUpdateType, PriorityQueue<RenderSection>> rebuildQueues;
 
 	public boolean needsUpdate;
 

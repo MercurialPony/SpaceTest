@@ -28,13 +28,12 @@ public class WorldMixin implements PlanetWorld
 	{
 		World world = (World) (Object) this;
 
+		int bottom = dimension.value().minY();
+
 		this.planetProps = new BasicPlanetProperties(
-			ChunkSectionPos.from(
-				ChunkSectionPos.getSectionCoord(0),
-				ChunkSectionPos.getSectionCoord(world.getBottomY()),
-				ChunkSectionPos.getSectionCoord(0)),
-			10,
-			world.getSeaLevel() - world.getBottomY());
+			ChunkSectionPos.from(0, ChunkSectionPos.getSectionCoord(bottom), 0),
+			5,
+			world.getSeaLevel() - bottom);
 	}
 
 	@Override

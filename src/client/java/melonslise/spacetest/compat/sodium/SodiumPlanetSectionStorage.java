@@ -59,6 +59,11 @@ public class SodiumPlanetSectionStorage
 		return this.chunkTracker.hasMergedFlags(x, z, ChunkStatus.FLAG_HAS_BLOCK_DATA) ? this.obtainRenderSection(x, y, z) : null;
 	}
 
+	public RenderSection getRenderSectionRaw(int x, int y, int z)
+	{
+		return this.sectionStorage.get(ChunkSectionPos.asLong(x, y, z));
+	}
+
 	public void close(CommandList commandList)
 	{
 		this.regionManager.delete(commandList);

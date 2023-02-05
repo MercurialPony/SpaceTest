@@ -104,6 +104,12 @@ public class VanillaPlanetRenderer implements PlanetRenderer
 	}
 
 	@Override
+	public void scheduleRebuild(int x, int y, int z, boolean important)
+	{
+		// FIXME
+	}
+
+	@Override
 	public void close()
 	{
 

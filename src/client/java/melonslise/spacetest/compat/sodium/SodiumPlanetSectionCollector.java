@@ -121,7 +121,7 @@ public class SodiumPlanetSectionCollector
 		{
 			RenderSection currentSection = this.discoveryQueue.getRender(i);
 
-			if(!this.getChunkSection(currentSection).isEmpty() && !this.cullSection(planetProps, planetState, currentSection, normal, container))
+			if(!this.getChunkSection(currentSection).isEmpty() && !this.cullSection(planetProps, planetState, currentSection, normal, container)) // FIXME continue if culled?
 			{
 				this.updateScheduler.accept(currentSection);
 				//sectionsToUpdate.add(new RenderSectionWrapper(currentSection));
