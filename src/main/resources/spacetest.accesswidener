@@ -1,6 +1,12 @@
 accessWidener v1 named
 
+accessible class net/minecraft/world/gen/densityfunction/DensityFunctionTypes$Noise
+
+accessible field net/minecraft/world/gen/chunk/ChunkNoiseSampler blockStateSampler Lnet/minecraft/world/gen/chunk/ChunkNoiseSampler$BlockStateSampler;
+
 extendable class net/minecraft/world/gen/chunk/NoiseChunkGenerator
 accessible field net/minecraft/world/gen/chunk/NoiseChunkGenerator settings Lnet/minecraft/registry/entry/RegistryEntry;
+accessible field net/minecraft/world/gen/chunk/NoiseChunkGenerator fluidLevelSampler Ljava/util/function/Supplier;
+extendable method net/minecraft/world/gen/chunk/NoiseChunkGenerator createChunkNoiseSampler (Lnet/minecraft/world/chunk/Chunk;Lnet/minecraft/world/gen/StructureAccessor;Lnet/minecraft/world/gen/chunk/Blender;Lnet/minecraft/world/gen/noise/NoiseConfig;)Lnet/minecraft/world/gen/chunk/ChunkNoiseSampler;
 
 accessible field net/minecraft/world/gen/StructureAccessor world Lnet/minecraft/world/WorldAccess;

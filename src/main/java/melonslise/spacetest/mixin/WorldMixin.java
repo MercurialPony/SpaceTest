@@ -32,7 +32,7 @@ public class WorldMixin implements PlanetWorld
 
 		this.planetProps = new BasicPlanetProperties(
 			ChunkSectionPos.from(0, ChunkSectionPos.getSectionCoord(bottom), 0),
-			5,
+			10,
 			world.getSeaLevel() - bottom);
 	}
 

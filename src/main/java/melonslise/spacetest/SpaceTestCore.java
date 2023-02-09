@@ -25,9 +25,12 @@ public class SpaceTestCore implements ModInitializer
 	public void onInitialize()
 	{
 		StBlocks.register();
+
 		StItems.register();
 		StItemGroups.register();
+
 		StBlockEntities.register();
+
 		StDimensions.registerParts();
 	}
 }

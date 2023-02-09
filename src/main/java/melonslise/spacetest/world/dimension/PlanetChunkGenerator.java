@@ -3,9 +3,11 @@ package melonslise.spacetest.world.dimension;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import melonslise.spacetest.SpaceTestCore;
+import melonslise.spacetest.planet.CubeFaceContext;
 import melonslise.spacetest.planet.CubemapFace;
 import melonslise.spacetest.planet.PlanetProjection;
 import melonslise.spacetest.world.PlanetWorld;
+import melonslise.spacetest.world.gen.noise.PlanetNoiseSampler;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -21,6 +23,7 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.StructureWeightSampler;
 import net.minecraft.world.gen.chunk.*;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
@@ -53,6 +56,29 @@ public class PlanetChunkGenerator extends NoiseChunkGenerator
 	{
 		ChunkPos pos = chunk.getPos();
 		return PlanetProjection.determineFace(((PlanetWorld) world).getPlanetProperties(), ChunkSectionPos.getBlockCoord(pos.x), ChunkSectionPos.getBlockCoord(pos.z));
+	}
+
+	@Override
+	protected ChunkNoiseSampler createChunkNoiseSampler(Chunk chunk, StructureAccessor structureAccessor, Blender blender, NoiseConfig noiseConfig)
+	{
+		ServerWorld serverWorld = ((ServerWorldAccess) structureAccessor.world).toServerWorld();
+
+		CubemapFace face = getFace(serverWorld, chunk);
+
+		if(face == null)
+		{
+			return super.createChunkNoiseSampler(chunk, structureAccessor, blender, noiseConfig);
+		}
+
+		return PlanetNoiseSampler.create(
+			new CubeFaceContext(face, ((PlanetWorld) serverWorld).getPlanetProperties(), serverWorld),
+			chunk,
+			noiseConfig,
+			StructureWeightSampler.createStructureWeightSampler(structureAccessor, chunk.getPos()),
+			this.settings.value(),
+			this.fluidLevelSampler.get(),
+			blender
+		);
 	}
 
 	@Override

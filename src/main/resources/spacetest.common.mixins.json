@@ -4,7 +4,12 @@
 	"package": "melonslise.spacetest.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
+		"DoublePerlinNoiseSamplerMixin",
+		"NoiseDensityFunctionMixin",
+		"NoiseDensityFunctionTypeMixin",
+		"OctavePerlinNoiseSamplerMixin",
 		"ServerWorldMixin",
+		"TestMixin",
 		"WorldMixin"
 	],
 	"injectors": {

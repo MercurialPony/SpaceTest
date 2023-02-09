@@ -149,7 +149,7 @@ public final class PlanetProjection
 	 * Maps a point on the face of a cubemap to a [-1, 1] cube (ignores the y component of the uv vec)
 	 * @return point on the surface of a [-1, 1] cube
 	 */
-	private static Vector3f uvToCube(CubemapFace face, Vector3f uv) // mirrors the same function in the shader
+	public static Vector3f uvToCube(CubemapFace face, Vector3f uv) // mirrors the same function in the shader
 	{
 		uv.mul(2.0f);
 		uv.add(-1.0f, -1.0f, -1.0f);
