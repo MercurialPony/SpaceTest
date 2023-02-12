@@ -23,8 +23,8 @@ public class WorldMixin implements PlanetWorld
 	// FIXME: this is not synced!
 	private PlanetProperties planetProps;
 
-	@Inject(method = "<init>", at = @At("TAIL"))
-	private void constructorInjectTail(MutableWorldProperties properties, RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimension, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates, CallbackInfo ci)
+	@Inject(method = "<init>", at = @At("RETURN"))
+	private void constructorInjectReturn(MutableWorldProperties properties, RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimension, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates, CallbackInfo ci)
 	{
 		World world = (World) (Object) this;
 

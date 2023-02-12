@@ -5,11 +5,15 @@
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"DoublePerlinNoiseSamplerMixin",
+		"EntityChunkDataAccessMixin",
 		"NoiseDensityFunctionMixin",
 		"NoiseDensityFunctionTypeMixin",
 		"OctavePerlinNoiseSamplerMixin",
+		"SerializingRegionBasedStorageMixin",
 		"ServerWorldMixin",
-		"TestMixin",
+		"StorageIoWorkerMixin",
+		"ProtoChunkMixin",
+		"ThreadedAnvilChunkStorageMixin",
 		"WorldMixin"
 	],
 	"injectors": {

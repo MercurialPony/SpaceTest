@@ -72,7 +72,7 @@ public final class PlanetProjection
 		int faceSizeBlocks = planetProps.getFaceSize() * 16;
 
 		// determine the face this point is on
-		CubemapFace face = determineFace(planetProps, MathHelper.floor(pos.x), MathHelper.floor(pos.z));
+		CubemapFace face = determineFaceInBlocks(planetProps, MathHelper.floor(pos.x), MathHelper.floor(pos.z));
 		// find the local face-space coordinates
 		pos.sub(face.offsetX * faceSizeBlocks, 0.0f, face.offsetZ * faceSizeBlocks);
 
@@ -132,15 +132,21 @@ public final class PlanetProjection
 		return planetProps.getStartRadius() * (float) Math.pow(planetProps.getRadiusRatio(), height);
 	}
 
-	// FIXME: THIS BUGS ON POSITIVE (16) EDGES HARD
-	public static CubemapFace determineFace(PlanetProperties planetProps, int x, int z)
+	// FIXME this probably does too
+	public static CubemapFace determineFaceInChunks(PlanetProperties planetProps, int x, int z)
 	{
 		ChunkSectionPos origin = planetProps.getOrigin();
-		int faceSizeBlocks = planetProps.getFaceSize() * 16;
+		int faceSizeChunks = planetProps.getFaceSize();
 
 		// transform the point to be relative to planet origin
 		// determine which face it is on
-		return CubemapFace.from(Math.floorDiv(x - origin.getMinX(), faceSizeBlocks), Math.floorDiv(z - origin.getMinZ(), faceSizeBlocks));
+		return CubemapFace.from(Math.floorDiv(x - origin.getX(), faceSizeChunks), Math.floorDiv(z - origin.getZ(), faceSizeChunks));
+	}
+
+	// FIXME: THIS BUGS ON POSITIVE (16) EDGES HARD
+	public static CubemapFace determineFaceInBlocks(PlanetProperties planetProps, int x, int z)
+	{
+		return determineFaceInChunks(planetProps, ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z));
 	}
 
 	// Thank you

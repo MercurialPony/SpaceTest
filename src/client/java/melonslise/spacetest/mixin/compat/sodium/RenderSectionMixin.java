@@ -10,11 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(value = RenderSection.class, remap = false)
 public class RenderSectionMixin
 {
-	@Redirect(
-		at = @At(
-			value = "INVOKE",
-			target = "Lme/jellysquid/mods/sodium/client/render/SodiumWorldRenderer;onChunkRenderUpdated(IIILme/jellysquid/mods/sodium/client/render/chunk/data/ChunkRenderData;Lme/jellysquid/mods/sodium/client/render/chunk/data/ChunkRenderData;)V"),
-		method = "setData")
+	@Redirect(method = "setData", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/render/SodiumWorldRenderer;onChunkRenderUpdated(IIILme/jellysquid/mods/sodium/client/render/chunk/data/ChunkRenderData;Lme/jellysquid/mods/sodium/client/render/chunk/data/ChunkRenderData;)V"))
 	private void setDataRedirectOnChunkRenderUpdated(SodiumWorldRenderer wr, int x, int y, int z, ChunkRenderData meshBefore, ChunkRenderData meshAfter)
 	{
 		if(wr == null)

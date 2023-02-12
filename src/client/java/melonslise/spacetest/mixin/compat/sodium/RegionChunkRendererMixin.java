@@ -25,8 +25,8 @@ public class RegionChunkRendererMixin implements ExtendedRegionChunkRenderer // 
 	@Mutable
 	private boolean isBlockFaceCullingEnabled;
 
-	@Inject(method = "<init>", at = @At("TAIL"))
-	private void injectConstructorTail(RenderDevice device, ChunkVertexType vertexType, CallbackInfo ci)
+	@Inject(method = "<init>", at = @At("RETURN"))
+	private void injectConstructorReturn(RenderDevice device, ChunkVertexType vertexType, CallbackInfo ci)
 	{
 		this.isBlockFaceCullingEnabled = this.enableBlockFaceCulling(this.isBlockFaceCullingEnabled);
 	}
