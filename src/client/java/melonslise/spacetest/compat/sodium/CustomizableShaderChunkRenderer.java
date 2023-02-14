@@ -7,7 +7,7 @@ import me.jellysquid.mods.sodium.client.render.chunk.shader.ShaderBindingContext
 
 import java.util.function.Function;
 
-public interface ExtendedShaderChunkRenderer
+public interface CustomizableShaderChunkRenderer
 {
 	default String getShaderDomain(String original)
 	{

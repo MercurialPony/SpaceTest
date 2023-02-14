@@ -1,10 +1,10 @@
 package melonslise.spacetest.test.blockentity.blockentity;
 
 import melonslise.spacetest.init.StBlockEntities;
-import melonslise.spacetest.core.planets.BasicPlanetState;
-import melonslise.spacetest.core.planets.PlanetProperties;
-import melonslise.spacetest.core.planets.PlanetState;
-import melonslise.spacetest.core.planets.world.PlanetWorld;
+import melonslise.spacetest.core.planet.BasicPlanetState;
+import melonslise.spacetest.core.planet.PlanetProperties;
+import melonslise.spacetest.core.planet.PlanetState;
+import melonslise.spacetest.core.planet.world.PlanetWorld;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;

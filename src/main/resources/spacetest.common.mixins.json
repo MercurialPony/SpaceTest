@@ -10,11 +10,11 @@
 		"core.seamless_worldgen.NoiseDensityFunctionTypeMixin",
 		"core.seamless_worldgen.OctavePerlinNoiseSamplerMixin",
 		"core.finite_world.SerializingRegionBasedStorageMixin",
-		"core.planets.ServerWorldMixin",
+		"core.planet.ServerWorldMixin",
 		"core.finite_world.StorageIoWorkerMixin",
 		"core.finite_world.ProtoChunkMixin",
 		"core.finite_world.ThreadedAnvilChunkStorageMixin",
-		"core.planets.WorldMixin"
+		"core.planet.WorldMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

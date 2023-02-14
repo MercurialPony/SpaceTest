@@ -25,6 +25,14 @@ public class OctavePerlinNoiseSamplerMixin implements Noise4dSampler
 	@Final
 	private double lacunarity;
 
+	/**
+	 * Just the normal sample method copied to work for 4d (as well as adding each sampler's random origin offset here,
+	 * since we don't have a dedicated PerlinNoiseSampler for 4d, and just use a static method for it)
+	 *
+	 * Note that since the default PerlinNoiseSampler does not have a randomly generated W offset, we leave that one alone
+	 * Also the permutations are not randomly generated like in vanilla
+	 * (TODO: I wonder if these will cause any issues?)
+	 */
 	@Override
 	public double sample(double x, double y, double z, double w)
 	{

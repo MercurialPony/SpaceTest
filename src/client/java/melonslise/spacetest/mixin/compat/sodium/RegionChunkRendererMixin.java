@@ -8,7 +8,7 @@ import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderList;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderMatrices;
 import me.jellysquid.mods.sodium.client.render.chunk.RegionChunkRenderer;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
-import melonslise.spacetest.compat.sodium.ExtendedRegionChunkRenderer;
+import melonslise.spacetest.compat.sodium.CustomizableRegionChunkRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = RegionChunkRenderer.class, remap = false)
-public class RegionChunkRendererMixin implements ExtendedRegionChunkRenderer // use ModifyExpressionValue from MixinExtras?
+public class RegionChunkRendererMixin implements CustomizableRegionChunkRenderer // use ModifyExpressionValue from MixinExtras?
 {
 	@Shadow
 	@Final

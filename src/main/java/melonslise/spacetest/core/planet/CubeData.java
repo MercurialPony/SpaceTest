@@ -1,4 +1,4 @@
-package melonslise.spacetest.core.planets;
+package melonslise.spacetest.core.planet;
 
 import melonslise.spacetest.util.ArrayIterator;
 import org.jetbrains.annotations.NotNull;

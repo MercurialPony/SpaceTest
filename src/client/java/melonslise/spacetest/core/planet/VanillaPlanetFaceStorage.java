@@ -1,6 +1,5 @@
 package melonslise.spacetest.core.planet;
 
-import melonslise.spacetest.core.planets.CubeFaceContext;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.chunk.ChunkBuilder;

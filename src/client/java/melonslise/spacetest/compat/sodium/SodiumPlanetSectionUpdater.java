@@ -27,6 +27,10 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * This component is responsible for scheduling chunks to build. It's almost a straight copy of a part of Sodium's RenderSectionManager
+ * Practically every field and method is copied 1:1
+ */
 public class SodiumPlanetSectionUpdater
 {
 	protected final ClientWorld world;

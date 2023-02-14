@@ -1,4 +1,4 @@
-package melonslise.spacetest.core.planets;
+package melonslise.spacetest.core.planet;
 
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;

@@ -14,6 +14,12 @@ import melonslise.spacetest.util.Vec3iFunction;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkSection;
 
+/**
+ * This component is essentially a simple wrapper class around Sodium's RenderSectionManager::sections/regions and loadSection
+ * Note that unlike Sodium which pre-caches all the RenderSections right away in RenderSectionManager::reloadChunks
+ * Here we take the lazy approach, creating RenderSections and RenderRegions only when they are requested
+ * (since most of a planet's chunks will probably never be visible anyway, thus saving us memory and preventing other headaches like finding the right time to pre-cache all the chunks)
+ */
 public class SodiumPlanetSectionStorage
 {
 	protected final ChunkTracker chunkTracker;

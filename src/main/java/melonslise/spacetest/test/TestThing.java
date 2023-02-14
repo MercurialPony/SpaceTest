@@ -1,7 +1,7 @@
 package melonslise.spacetest.test;
 
-import melonslise.spacetest.core.planets.CubemapFace;
-import melonslise.spacetest.core.planets.PlanetProjection;
+import melonslise.spacetest.core.planet.CubemapFace;
+import melonslise.spacetest.core.planet.PlanetProjection;
 import melonslise.spacetest.core.seamless_worldgen.noise.Noise4dSampler;
 import melonslise.spacetest.core.seamless_worldgen.noise.PerlinNoise4d;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;

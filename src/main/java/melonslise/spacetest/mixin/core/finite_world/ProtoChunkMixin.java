@@ -1,7 +1,7 @@
 package melonslise.spacetest.mixin.core.finite_world;
 
-import melonslise.spacetest.core.planets.PlanetProjection;
-import melonslise.spacetest.core.planets.world.PlanetWorld;
+import melonslise.spacetest.core.planet.PlanetProjection;
+import melonslise.spacetest.core.planet.world.PlanetWorld;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
@@ -19,6 +19,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * To make a world 'finite' all we need to do is disable certain chunks from being saved/read and generated
+ *
+ * During worldgen each (proto) chunk goes through a sequence of generation steps defined by ChunkStatuses
+ * we can entirely bypass this by setting the chunk as FULL to skip over all the generation (if it is outside the planet cubemap)
+ */
 @Mixin(ProtoChunk.class)
 public class ProtoChunkMixin
 {

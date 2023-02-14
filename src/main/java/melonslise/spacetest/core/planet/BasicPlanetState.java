@@ -1,4 +1,4 @@
-package melonslise.spacetest.core.planets;
+package melonslise.spacetest.core.planet;
 
 import org.joml.Quaternionf;
 import org.joml.Vector3d;

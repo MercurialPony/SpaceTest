@@ -1,12 +1,12 @@
-package melonslise.spacetest.core.planets.world.gen;
+package melonslise.spacetest.core.planet.world.gen;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import melonslise.spacetest.SpaceTestCore;
-import melonslise.spacetest.core.planets.CubeFaceContext;
-import melonslise.spacetest.core.planets.PlanetProjection;
-import melonslise.spacetest.core.planets.PlanetProperties;
-import melonslise.spacetest.core.planets.world.PlanetWorld;
+import melonslise.spacetest.core.planet.CubeFaceContext;
+import melonslise.spacetest.core.planet.PlanetProjection;
+import melonslise.spacetest.core.planet.PlanetProperties;
+import melonslise.spacetest.core.planet.world.PlanetWorld;
 import melonslise.spacetest.core.seamless_worldgen.noise.PlanetNoiseSampler;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;

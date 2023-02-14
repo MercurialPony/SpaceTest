@@ -1,8 +1,8 @@
 package melonslise.spacetest.mixin.core.seamless_worldgen;
 
-import melonslise.spacetest.core.planets.CubeFaceContext;
-import melonslise.spacetest.core.planets.PlanetProjection;
-import melonslise.spacetest.core.seamless_worldgen.noise.FaceAwareNoisePos;
+import melonslise.spacetest.core.planet.CubeFaceContext;
+import melonslise.spacetest.core.planet.PlanetProjection;
+import melonslise.spacetest.core.seamless_worldgen.noise.FaceAware;
 import melonslise.spacetest.core.seamless_worldgen.noise.Noise4dSampler;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
@@ -28,22 +28,24 @@ public class NoiseDensityFunctionTypeMixin
 	/**
 	 * @author Melonslise
 	 * @reason add support for our 4d noise implementation
+	 *
+	 * Reason behind using y as w is described in PlanetNoiseSampler
 	 */
 	@Overwrite
 	public double sample(DensityFunction.NoisePos pos)
 	{
 		// FIXME memoize
-		if(pos instanceof FaceAwareNoisePos fpos)
+		if(pos instanceof FaceAware faceAware)
 		{
-			CubeFaceContext faceCtx = fpos.faceCtx();
+			CubeFaceContext faceCtx = faceAware.faceCtx();
 
-			Vector3f newPos = new Vector3f(fpos.blockX(), 0.0f, fpos.blockZ());
+			Vector3f newPos = new Vector3f(pos.blockX(), 0.0f, pos.blockZ());
 			newPos.sub(faceCtx.minX(), 0.0f, faceCtx.minZ());
 			newPos.div(faceCtx.faceSize() * 16); // FIXME rename this
 			PlanetProjection.uvToCube(faceCtx.face(), newPos);
 			newPos.mul(faceCtx.faceSize() * 8);
 
-			return ((Noise4dSampler) (Object) this.noise).sample(newPos.x * this.xzScale, newPos.y * this.xzScale, newPos.z * this.xzScale, fpos.blockY() * yScale);
+			return ((Noise4dSampler) (Object) this.noise).sample(newPos.x * this.xzScale, newPos.y * this.xzScale, newPos.z * this.xzScale, pos.blockY() * yScale);
 		}
 
 		return this.noise.sample(pos.blockX() * this.xzScale, pos.blockY() * this.yScale, pos.blockZ() * this.xzScale);

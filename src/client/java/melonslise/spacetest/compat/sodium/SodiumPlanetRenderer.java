@@ -13,8 +13,8 @@ import me.jellysquid.mods.sodium.client.world.WorldRendererExtended;
 import melonslise.spacetest.SpaceTestClient;
 import melonslise.spacetest.core.planet.LightmapTexture;
 import melonslise.spacetest.core.planet.PlanetRenderer;
-import melonslise.spacetest.core.planets.*;
-import melonslise.spacetest.core.planets.world.PlanetWorld;
+import melonslise.spacetest.core.planet.*;
+import melonslise.spacetest.core.planet.world.PlanetWorld;
 import melonslise.spacetest.init.StShaders;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -33,6 +33,19 @@ import org.joml.Vector3d;
 // add transparency sorting
 // schedule chunks closest to the camera to compile first
 // borrow already compiled chunks from worldrenderer
+
+/**
+ * Central planet renderer class
+ * This heavily mimics the behavior of Sodium's SodiumWorldRenderer (and very slightly RenderSectionManager), adapted to work for planets
+ * The subcomponents like SodiumPlanetSectionUpdater, SodiumPlanetSectionStorage, etc. are chunks of RenderSectionManager, split up into logical pieces
+ *
+ * In general, the entire Sodium compat is basically just copy-pasted and adapted Sodium code
+ *
+ * Here, init -> SodiumWorldRenderer::loadWorld/RenderSectionManager::new
+ * updateAndRenderer -> SodiumWorldRenderer::updateChunks
+ * scheduleRebuild -> SodiumWorldRenderer::scheduleRebuildForChunk/RenderSectionManager::scheduleRebuild
+ * close -> SodiumWorldRenderer::unloadWorld/RenderSectionManager::destroy
+ */
 public class SodiumPlanetRenderer implements PlanetRenderer
 {
 	protected PlanetProperties planetProps;

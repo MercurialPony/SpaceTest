@@ -1,5 +1,6 @@
 package melonslise.spacetest.core.seamless_worldgen.noise;
 
+// https://cs.nyu.edu/~perlin/noise/ImprovedNoise4D.java
 public class PerlinNoise4d
 {
 	public static double sample(double x, double y, double z, double w)

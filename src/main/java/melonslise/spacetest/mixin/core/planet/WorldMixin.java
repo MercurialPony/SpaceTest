@@ -1,8 +1,8 @@
-package melonslise.spacetest.mixin.core.planets;
+package melonslise.spacetest.mixin.core.planet;
 
-import melonslise.spacetest.core.planets.BasicPlanetProperties;
-import melonslise.spacetest.core.planets.PlanetProperties;
-import melonslise.spacetest.core.planets.world.PlanetWorld;
+import melonslise.spacetest.core.planet.BasicPlanetProperties;
+import melonslise.spacetest.core.planet.PlanetProperties;
+import melonslise.spacetest.core.planet.world.PlanetWorld;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.ChunkSectionPos;

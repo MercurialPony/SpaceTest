@@ -7,8 +7,8 @@ import me.jellysquid.mods.sodium.client.render.chunk.ChunkCameraContext;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
-import melonslise.spacetest.core.planets.CubeFaceContext;
-import melonslise.spacetest.core.planets.PlanetProperties;
+import melonslise.spacetest.core.planet.CubeFaceContext;
+import melonslise.spacetest.core.planet.PlanetProperties;
 
 public class SodiumPlanetShaderInterface extends ChunkShaderInterface
 {

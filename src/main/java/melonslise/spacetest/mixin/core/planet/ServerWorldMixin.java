@@ -1,6 +1,6 @@
-package melonslise.spacetest.mixin.core.planets;
+package melonslise.spacetest.mixin.core.planet;
 
-import melonslise.spacetest.core.planets.world.gen.PlanetChunkGenerator;
+import melonslise.spacetest.core.planet.world.gen.PlanetChunkGenerator;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;

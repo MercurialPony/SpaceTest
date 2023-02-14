@@ -3,13 +3,13 @@ package melonslise.spacetest.mixin.compat.sodium;
 import me.jellysquid.mods.sodium.client.render.chunk.ShaderChunkRenderer;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkFogMode;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
-import melonslise.spacetest.compat.sodium.ExtendedShaderChunkRenderer;
+import melonslise.spacetest.compat.sodium.CustomizableShaderChunkRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(value = ShaderChunkRenderer.class, remap = false)
-public class ShaderChunkRendererMixin implements ExtendedShaderChunkRenderer
+public class ShaderChunkRendererMixin implements CustomizableShaderChunkRenderer
 {
 	@ModifyConstant(method = "compileProgram", constant = @Constant(stringValue = "blocks/block_layer_opaque"))
 	private String compileProgramModifyConstantShaderPath(String constant)

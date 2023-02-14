@@ -2,9 +2,7 @@ package melonslise.spacetest.core.planet;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.satin.api.managed.ManagedCoreShader;
-import melonslise.spacetest.core.planets.*;
 import melonslise.spacetest.init.StShaders;
-import melonslise.spacetest.planet.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

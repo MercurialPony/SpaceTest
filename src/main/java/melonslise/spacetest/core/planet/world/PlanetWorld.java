@@ -1,6 +1,6 @@
-package melonslise.spacetest.core.planets.world;
+package melonslise.spacetest.core.planet.world;
 
-import melonslise.spacetest.core.planets.PlanetProperties;
+import melonslise.spacetest.core.planet.PlanetProperties;
 
 public interface PlanetWorld
 {

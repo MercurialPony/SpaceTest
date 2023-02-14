@@ -2,7 +2,7 @@ package melonslise.spacetest.compat.sodium;
 
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkCameraContext;
 
-public interface ExtendedRegionChunkRenderer
+public interface CustomizableRegionChunkRenderer
 {
 	default boolean enableBlockFaceCulling(boolean original)
 	{

@@ -3,10 +3,10 @@ package melonslise.spacetest.compat.sodium;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderList;
 import me.jellysquid.mods.sodium.client.render.chunk.RenderSection;
 import me.jellysquid.mods.sodium.client.render.chunk.graph.ChunkGraphIterationQueue;
-import melonslise.spacetest.core.planets.CubeFaceContext;
-import melonslise.spacetest.core.planets.PlanetProjection;
-import melonslise.spacetest.core.planets.PlanetProperties;
-import melonslise.spacetest.core.planets.PlanetState;
+import melonslise.spacetest.core.planet.CubeFaceContext;
+import melonslise.spacetest.core.planet.PlanetProjection;
+import melonslise.spacetest.core.planet.PlanetProperties;
+import melonslise.spacetest.core.planet.PlanetState;
 import melonslise.spacetest.util.Vec3iFunction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.Direction;
@@ -16,6 +16,11 @@ import org.joml.Vector3f;
 
 import java.util.function.Consumer;
 
+/**
+ * This component of the planet renderer is responsible for collecting visible sections for rendering and sending them off to get built if they haven't been
+ * It is least similar to the RenderSectionManager out of all the components, and behaves almost exactly like the default VanillaPlanetFaceRenderer with some of Sodium's optimizations
+ * (borrowed from RenderSectionManager::iterateChunks)
+ */
 public class SodiumPlanetSectionCollector
 {
 	public final Vec3iFunction<ChunkSection> chunkSectionGetter;
