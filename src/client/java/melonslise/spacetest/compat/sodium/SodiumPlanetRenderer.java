@@ -11,11 +11,11 @@ import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPassManag
 import me.jellysquid.mods.sodium.client.util.NativeBuffer;
 import me.jellysquid.mods.sodium.client.world.WorldRendererExtended;
 import melonslise.spacetest.SpaceTestClient;
+import melonslise.spacetest.core.planet.LightmapTexture;
+import melonslise.spacetest.core.planet.PlanetRenderer;
+import melonslise.spacetest.core.planets.*;
+import melonslise.spacetest.core.planets.world.PlanetWorld;
 import melonslise.spacetest.init.StShaders;
-import melonslise.spacetest.planet.*;
-import melonslise.spacetest.render.LightmapTexture;
-import melonslise.spacetest.render.planet.PlanetRenderer;
-import melonslise.spacetest.world.PlanetWorld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.WorldRenderer;

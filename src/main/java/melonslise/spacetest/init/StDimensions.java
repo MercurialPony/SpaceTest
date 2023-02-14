@@ -1,7 +1,7 @@
 package melonslise.spacetest.init;
 
-import melonslise.spacetest.world.dimension.PlanetChunkGenerator;
-import melonslise.spacetest.world.dimension.VoidChunkGenerator;
+import melonslise.spacetest.core.planets.world.gen.PlanetChunkGenerator;
+import melonslise.spacetest.core.space.world.gen.VoidChunkGenerator;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 

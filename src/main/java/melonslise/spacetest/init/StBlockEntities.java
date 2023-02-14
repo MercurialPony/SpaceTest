@@ -1,7 +1,7 @@
 package melonslise.spacetest.init;
 
 import melonslise.spacetest.SpaceTestCore;
-import melonslise.spacetest.blockentity.PlanetBlockEntity;
+import melonslise.spacetest.test.blockentity.blockentity.PlanetBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;

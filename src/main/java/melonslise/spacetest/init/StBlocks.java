@@ -1,7 +1,7 @@
 package melonslise.spacetest.init;
 
 import melonslise.spacetest.SpaceTestCore;
-import melonslise.spacetest.block.PlanetBlock;
+import melonslise.spacetest.test.block.PlanetBlock;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;

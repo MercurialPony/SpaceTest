@@ -9,8 +9,8 @@ import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderInterface
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkShaderOptions;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ShaderBindingContext;
 import melonslise.spacetest.SpaceTestCore;
-import melonslise.spacetest.planet.CubeFaceContext;
-import melonslise.spacetest.planet.PlanetProperties;
+import melonslise.spacetest.core.planets.CubeFaceContext;
+import melonslise.spacetest.core.planets.PlanetProperties;
 
 import java.util.function.Function;
 
