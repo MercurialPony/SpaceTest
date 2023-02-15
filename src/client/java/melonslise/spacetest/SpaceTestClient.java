@@ -1,6 +1,7 @@
 package melonslise.spacetest;
 
 import melonslise.spacetest.init.StBlockEntityRenderers;
+import melonslise.spacetest.init.StClientPackets;
 import melonslise.spacetest.init.StShaders;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -23,6 +24,8 @@ public class SpaceTestClient implements ClientModInitializer
 
 		StBlockEntityRenderers.register();
 		StShaders.register();
+
+		StClientPackets.register();
 
 		WorldRenderEvents.START.register(ctx -> modelViewMat = ctx.matrixStack().peek().getPositionMatrix());
 	}

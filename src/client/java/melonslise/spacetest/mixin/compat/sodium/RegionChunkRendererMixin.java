@@ -26,13 +26,13 @@ public class RegionChunkRendererMixin implements CustomizableRegionChunkRenderer
 	private boolean isBlockFaceCullingEnabled;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	private void injectConstructorReturn(RenderDevice device, ChunkVertexType vertexType, CallbackInfo ci)
+	private void modifyBlockFaceCulling(RenderDevice device, ChunkVertexType vertexType, CallbackInfo ci)
 	{
 		this.isBlockFaceCullingEnabled = this.enableBlockFaceCulling(this.isBlockFaceCullingEnabled);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/gl/shader/GlProgram;getInterface()Ljava/lang/Object;"))
-	private void renderInjectGetInterface(ChunkRenderMatrices matrices, CommandList commandList, ChunkRenderList list, BlockRenderPass pass, ChunkCameraContext camera, CallbackInfo ci)
+	private void addBeginRender(ChunkRenderMatrices matrices, CommandList commandList, ChunkRenderList list, BlockRenderPass pass, ChunkCameraContext camera, CallbackInfo ci)
 	{
 		this.beginRender(camera);
 	}

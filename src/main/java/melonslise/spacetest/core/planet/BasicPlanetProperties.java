@@ -10,6 +10,14 @@ public class BasicPlanetProperties implements PlanetProperties
 	private final float startRadius;
 	private final float radiusRatio;
 
+	public BasicPlanetProperties(ChunkSectionPos origin, int faceSize, float startRadius, float radiusRatio)
+	{
+		this.origin = origin;
+		this.faceSize = faceSize;
+		this.startRadius = startRadius;
+		this.radiusRatio = radiusRatio;
+	}
+
 	// SeaLevel must be relative to the bottom Y!!!
 	public BasicPlanetProperties(ChunkSectionPos origin, int faceSize, int seaLevel)
 	{

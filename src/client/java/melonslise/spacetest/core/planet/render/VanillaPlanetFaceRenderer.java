@@ -1,7 +1,8 @@
-package melonslise.spacetest.core.planet;
+package melonslise.spacetest.core.planet.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.satin.api.managed.ManagedCoreShader;
+import melonslise.spacetest.core.planet.*;
 import melonslise.spacetest.init.StShaders;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

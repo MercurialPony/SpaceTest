@@ -1,10 +1,10 @@
 package melonslise.spacetest.test.blockentity.blockentity;
 
-import melonslise.spacetest.init.StBlockEntities;
 import melonslise.spacetest.core.planet.BasicPlanetState;
 import melonslise.spacetest.core.planet.PlanetProperties;
 import melonslise.spacetest.core.planet.PlanetState;
 import melonslise.spacetest.core.planet.world.PlanetWorld;
+import melonslise.spacetest.init.StBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
@@ -34,8 +34,13 @@ public class PlanetBlockEntity extends BlockEntity
 
 		if(placer instanceof ServerPlayerEntity player)
 		{
-			PlanetProperties props = ((PlanetWorld) player.world).getPlanetProperties();
-			PortalAPI.addChunkLoaderForPlayer(player, new ChunkLoader(new DimensionalChunkPos(World.OVERWORLD, props.getOrigin().toChunkPos()), props.getFaceSize() * 2 + 1));
+			PlanetWorld planetWorld = (PlanetWorld) player.server.getWorld(World.OVERWORLD);
+
+			if(planetWorld.isPlanet())
+			{
+				PlanetProperties props = planetWorld.getPlanetProperties();
+				PortalAPI.addChunkLoaderForPlayer(player, new ChunkLoader(new DimensionalChunkPos(World.OVERWORLD, props.getOrigin().toChunkPos()), props.getFaceSize() * 2 + 1));
+			}
 		}
 	}
 

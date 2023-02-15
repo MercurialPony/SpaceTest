@@ -1,11 +1,15 @@
-package melonslise.spacetest.core.planet;
+package melonslise.spacetest.core.planet.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import ladysnake.satin.api.managed.ManagedCoreShader;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import melonslise.spacetest.SpaceTestClient;
-import melonslise.spacetest.init.StShaders;
+import melonslise.spacetest.core.planet.CubeData;
+import melonslise.spacetest.core.planet.PlanetProjection;
+import melonslise.spacetest.core.planet.PlanetProperties;
+import melonslise.spacetest.core.planet.PlanetState;
 import melonslise.spacetest.core.planet.world.PlanetWorld;
+import melonslise.spacetest.init.StShaders;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -41,16 +45,14 @@ public class VanillaPlanetRenderer implements PlanetRenderer
 	@Override
 	public void init(ClientWorld world, WorldRenderer worldRenderer)
 	{
-		if(world == null)
+		if(world instanceof PlanetWorld pw && pw.isPlanet())
 		{
-			return;
+			this.planetProps = pw.getPlanetProperties();
+
+			this.lightmap = new LightmapTexture(world);
+
+			this.faceRenderers = new CubeData<>(face -> new VanillaPlanetFaceRenderer(world, worldRenderer.getChunkBuilder(), this.planetProps, face));
 		}
-
-		this.planetProps = ((PlanetWorld) world).getPlanetProperties();
-
-		this.lightmap = new LightmapTexture(world);
-
-		this.faceRenderers = new CubeData<>(face -> new VanillaPlanetFaceRenderer(world, worldRenderer.getChunkBuilder(), planetProps, face));
 	}
 
 	@Override

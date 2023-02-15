@@ -1,5 +1,6 @@
-package melonslise.spacetest.core.planet;
+package melonslise.spacetest.core.planet.render;
 
+import melonslise.spacetest.core.planet.PlanetState;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;

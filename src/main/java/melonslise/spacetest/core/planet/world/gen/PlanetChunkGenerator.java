@@ -44,6 +44,7 @@ public class PlanetChunkGenerator extends NoiseChunkGenerator
 	protected ChunkNoiseSampler createChunkNoiseSampler(Chunk chunk, StructureAccessor structureAccessor, Blender blender, NoiseConfig noiseConfig)
 	{
 		ServerWorld world = ((ServerWorldAccess) structureAccessor.world).toServerWorld();
+
 		PlanetProperties planetProps = ((PlanetWorld) world).getPlanetProperties();
 
 		return PlanetNoiseSampler.create(

@@ -1,8 +1,8 @@
 package melonslise.spacetest.test.render.blockentity;
 
 import melonslise.spacetest.test.blockentity.blockentity.PlanetBlockEntity;
-import melonslise.spacetest.core.planet.PlanetWorldRenderer;
-import melonslise.spacetest.core.planet.PlanetRenderer;
+import melonslise.spacetest.core.planet.render.PlanetWorldRenderer;
+import melonslise.spacetest.core.planet.render.PlanetRenderer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;

@@ -7,4 +7,9 @@ public interface PlanetWorld
 	PlanetProperties getPlanetProperties();
 
 	void setPlanetProperties(PlanetProperties props);
+
+	default boolean isPlanet()
+	{
+		return this.getPlanetProperties() != null;
+	}
 }

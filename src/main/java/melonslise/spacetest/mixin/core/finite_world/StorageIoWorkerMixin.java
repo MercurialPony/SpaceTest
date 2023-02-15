@@ -1,8 +1,8 @@
 package melonslise.spacetest.mixin.core.finite_world;
 
+import melonslise.spacetest.core.finite_world.WorldAware;
 import melonslise.spacetest.core.planet.PlanetProjection;
 import melonslise.spacetest.core.planet.world.PlanetWorld;
-import melonslise.spacetest.core.finite_world.WorldAware;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -47,7 +47,7 @@ public class StorageIoWorkerMixin implements WorldAware
 	@Inject(method = "setResult", at = @At("HEAD"), cancellable = true)
 	private void refuseChunkIfOutOfPlanetRange(ChunkPos pos, @Nullable NbtCompound nbt, CallbackInfoReturnable<CompletableFuture<Void>> cir)
 	{
-		if(world instanceof PlanetWorld pw && PlanetProjection.determineFaceInChunks(pw.getPlanetProperties(), pos.x, pos.z) == null)
+		if(world instanceof PlanetWorld pw && pw.isPlanet() && PlanetProjection.determineFaceInChunks(pw.getPlanetProperties(), pos.x, pos.z) == null)
 		{
 			cir.setReturnValue(CompletableFuture.completedFuture(null));
 		}

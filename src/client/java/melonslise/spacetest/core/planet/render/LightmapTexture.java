@@ -1,4 +1,4 @@
-package melonslise.spacetest.core.planet;
+package melonslise.spacetest.core.planet.render;
 
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;

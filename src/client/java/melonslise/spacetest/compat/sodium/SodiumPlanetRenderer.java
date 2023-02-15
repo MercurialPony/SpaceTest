@@ -11,9 +11,9 @@ import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPassManag
 import me.jellysquid.mods.sodium.client.util.NativeBuffer;
 import me.jellysquid.mods.sodium.client.world.WorldRendererExtended;
 import melonslise.spacetest.SpaceTestClient;
-import melonslise.spacetest.core.planet.LightmapTexture;
-import melonslise.spacetest.core.planet.PlanetRenderer;
 import melonslise.spacetest.core.planet.*;
+import melonslise.spacetest.core.planet.render.LightmapTexture;
+import melonslise.spacetest.core.planet.render.PlanetRenderer;
 import melonslise.spacetest.core.planet.world.PlanetWorld;
 import melonslise.spacetest.init.StShaders;
 import net.minecraft.client.MinecraftClient;
@@ -22,6 +22,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3d;
@@ -48,6 +49,7 @@ import org.joml.Vector3d;
  */
 public class SodiumPlanetRenderer implements PlanetRenderer
 {
+	protected World world;
 	protected PlanetProperties planetProps;
 
 	protected ChunkTracker chunkTracker;
@@ -67,12 +69,14 @@ public class SodiumPlanetRenderer implements PlanetRenderer
 	@Override
 	public void init(ClientWorld world, WorldRenderer worldRenderer)
 	{
-		if(world == null)
+		if(world == null || this.world == world || !((PlanetWorld) world).isPlanet())
 		{
 			return;
 		}
 
 		this.close();
+
+		this.world = world;
 
 		RenderDevice.enterManagedCode();
 
@@ -192,6 +196,11 @@ public class SodiumPlanetRenderer implements PlanetRenderer
 	@Override
 	public void scheduleRebuild(int x, int y, int z, boolean important)
 	{
+		if(this.closed())
+		{
+			return;
+		}
+
 		this.sectionUpdater.sectionCache.invalidate(x, y, z);
 
 		RenderSection section = this.sectionStorage.getRenderSectionRaw(x, y, z);

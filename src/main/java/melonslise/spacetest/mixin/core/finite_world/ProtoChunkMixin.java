@@ -38,8 +38,9 @@ public class ProtoChunkMixin
 	private void setToFullIfOutOfPlanetRange(ChunkPos pos, UpgradeData upgradeData, ChunkSection[] sections, SimpleTickScheduler blockTickScheduler, SimpleTickScheduler fluidTickScheduler, HeightLimitView view, Registry biomeRegistry, BlendingData blendingData, CallbackInfo ci)
 	{
 		ServerWorld serverWorld = (ServerWorld) view;
+		PlanetWorld planetWorld = (PlanetWorld) serverWorld;
 
-		if(PlanetProjection.determineFaceInChunks(((PlanetWorld) view).getPlanetProperties(), pos.x, pos.z) == null)
+		if(planetWorld.isPlanet() && PlanetProjection.determineFaceInChunks(planetWorld.getPlanetProperties(), pos.x, pos.z) == null)
 		{
 			this.status = ChunkStatus.FULL;
 			this.lightingProvider = serverWorld.getLightingProvider();

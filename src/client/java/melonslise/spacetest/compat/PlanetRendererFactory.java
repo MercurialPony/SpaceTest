@@ -2,8 +2,8 @@ package melonslise.spacetest.compat;
 
 import melonslise.spacetest.SpaceTestClient;
 import melonslise.spacetest.compat.sodium.SodiumPlanetRenderer;
-import melonslise.spacetest.core.planet.PlanetRenderer;
-import melonslise.spacetest.core.planet.VanillaPlanetRenderer;
+import melonslise.spacetest.core.planet.render.PlanetRenderer;
+import melonslise.spacetest.core.planet.render.VanillaPlanetRenderer;
 
 public class PlanetRendererFactory
 {

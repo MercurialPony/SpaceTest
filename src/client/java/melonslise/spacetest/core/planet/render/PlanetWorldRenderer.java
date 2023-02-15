@@ -1,4 +1,4 @@
-package melonslise.spacetest.core.planet;
+package melonslise.spacetest.core.planet.render;
 
 public interface PlanetWorldRenderer
 {
