@@ -26,7 +26,7 @@ import net.minecraft.world.gen.noise.NoiseConfig;
  * Note that since we only modify the vanilla noise-sampling density functions, seamless worldgen will NOT work with mods that add their own
  * noise sampling density functions or use their own noise generators
  */
-public class PlanetNoiseSampler extends ChunkNoiseSampler implements FaceAware
+public class PlanetNoiseSampler extends ChunkNoiseSampler implements FaceAwareNoisePos
 {
 	protected CubeFaceContext faceCtx;
 

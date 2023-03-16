@@ -4,13 +4,16 @@
 	"package": "melonslise.spacetest.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"client": [
-		"core.planet.WorldRendererMixin",
-		"core.planet.ClientWorldMixin",
+		"compat.sodium.RegionChunkRendererMixin",
 		"compat.sodium.RenderSectionMixin",
 		"compat.sodium.ShaderChunkRendererMixin",
-		"compat.sodium.RegionChunkRendererMixin"
+		"core.planet.ClientWorldMixin",
+		"core.planet.WorldRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
-	}
+	},
+	"mixins": [
+		"core.seamless_worldgen.ShiftedNoiseDensityFunctionTypeMixin"
+	]
 }

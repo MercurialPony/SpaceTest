@@ -12,7 +12,7 @@
 					"type": "minecraft:multi_noise",
 					"preset": "minecraft:overworld"
 				},
-				"settings": "spacetest:noise_test"
+				"settings": "minecraft:overworld"
 			}
 		},
 		"minecraft:the_end":
